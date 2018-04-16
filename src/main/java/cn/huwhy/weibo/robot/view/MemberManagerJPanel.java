@@ -2,6 +2,7 @@ package cn.huwhy.weibo.robot.view;
 
 import cn.huwhy.weibo.robot.App;
 import cn.huwhy.weibo.robot.action.CommentAction;
+import cn.huwhy.weibo.robot.action.CommentSettingAction;
 import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.util.MyFont;
 import cn.huwhy.weibo.robot.util.ResourcesUtil;
@@ -238,9 +239,13 @@ public class MemberManagerJPanel implements MouseListener {
         } else if (e.getSource() == btnWbLogin) {
             this.frame.chromeBrowserService.login(this.member);
         } else if (e.getSource() == btnTest) {
-            CommentAction action = SpringContentUtil.getBean(CommentAction.class);
+//            CommentAction action = SpringContentUtil.getBean(CommentAction.class);
+//            action.setDriver(this.frame.chromeBrowserService.getDriver());
+//            action.setMember(this.member);
+//            action.run();
+            CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);
             action.setDriver(this.frame.chromeBrowserService.getDriver());
-            action.setMember(this.member);
+            action.setMemberConfig(this.member.getConfig());
             action.run();
         }
     }
