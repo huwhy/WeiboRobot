@@ -9,6 +9,7 @@ import cn.huwhy.weibo.robot.model.WordType;
 import cn.huwhy.weibo.robot.service.FansService;
 import cn.huwhy.weibo.robot.service.MemberService;
 import cn.huwhy.weibo.robot.service.WordService;
+import org.apache.commons.lang.time.DateUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,19 +18,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class CommentAction {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private static String uri = "https://weibo.com/comment/inbox?topnav=1&wvr=6&f=1";
+    private static Pattern timePattern = Pattern.compile("\\d{1,2}月10日\\s\\d{2}:\\d{2}");
 
     private WebDriver driver;
     private Member member;
+    private Date minDate;
     private volatile boolean running = false;
     private long lastCommentId;
     private long curMaxCommentId;
@@ -44,6 +50,12 @@ public class CommentAction {
     private MemberService memberService;
 
     public CommentAction() {
+    }
+
+    public void init(WebDriver driver, Member member, Date minDate) {
+        this.driver = driver;
+        this.member = member;
+        this.minDate = minDate;
     }
 
     public void run() {
@@ -93,6 +105,14 @@ public class CommentAction {
                 String href = element.findElement(By.cssSelector(".face a")).getAttribute("href");
                 String nick = element.findElement(By.cssSelector(".WB_detail .WB_info a")).getText();
                 String text = element.findElement(By.cssSelector(".WB_detail .WB_text")).getText();
+                String timeStr = element.findElement(By.cssSelector(".WB_detail .WB_from")).getText();
+                Matcher matcher = timePattern.matcher(timeStr);
+                if(matcher.find()) {
+                    Date date = DateUtils.parseDate(matcher.group(), new String[]{"MM月dd日 HH:mm", "yyyy年MM月dd日 HH:mm", "M月dd日 HH:mm"});
+                    if (date.before(minDate)) {
+                        break;
+                    }
+                }
                 WebElement imgEl = element.findElement(By.cssSelector(".face a img"));
                 String img = imgEl.getAttribute("src");
                 String usercard = imgEl.getAttribute("usercard").replace("id=", "");
@@ -176,11 +196,4 @@ public class CommentAction {
         this.lastCommentId = this.member.getLastCommentId();
     }
 
-    public void setDriver(WebDriver driver) {
-        this.driver = driver;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
-    }
 }

@@ -1,6 +1,6 @@
 package cn.huwhy.weibo.robot;
 
-import cn.huwhy.weibo.robot.view.LoginJFrame;
+import cn.huwhy.weibo.robot.view.MainWindow;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,8 @@ public class App {
             UIManager.put("RootPane.setupButtonVisible", false);
             AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
             context.registerShutdownHook();
-            new LoginJFrame(context);
+//            new LoginJFrame(context);
+            new MainWindow();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

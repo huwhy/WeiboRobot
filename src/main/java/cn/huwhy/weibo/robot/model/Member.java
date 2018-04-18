@@ -66,7 +66,7 @@ public class Member implements Serializable {
         this.lastCommentId = lastCommentId;
     }
 
-    private MemberConfig config;
+    private MemberConfig config = new MemberConfig();
 
     public MemberConfig getConfig() {
         return config;

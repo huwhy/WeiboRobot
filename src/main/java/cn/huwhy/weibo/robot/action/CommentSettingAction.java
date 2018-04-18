@@ -26,7 +26,11 @@ public class CommentSettingAction {
         try {
             WebElement el = driver.findElement(By.cssSelector(".gn_set .gn_set_list:nth-child(2)"));
             ActionUtil.moveToEl(driver, ".gn_set .gn_set_list a[node-type=account] em");
-            ActionUtil.click(el, ".gn_topmenulist_set ul li:nth-child(1)");
+            while(true) {
+                try {
+                    ActionUtil.click(el, ".gn_topmenulist_set ul li:nth-child(1)");
+                } catch (Throwable ignore){}
+            }
         } finally {
             running = false;
         }

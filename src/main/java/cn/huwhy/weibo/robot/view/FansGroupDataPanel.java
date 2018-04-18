@@ -7,13 +7,13 @@ import cn.huwhy.weibo.robot.model.MyFansTerm;
 import cn.huwhy.weibo.robot.model.WordType;
 import cn.huwhy.weibo.robot.service.FansService;
 import cn.huwhy.weibo.robot.util.JComboBoxItem;
+import cn.huwhy.weibo.robot.util.MyFont;
 import cn.huwhy.weibo.robot.util.ResourcesUtil;
+import cn.huwhy.weibo.robot.util.SpringContentUtil;
 import cn.huwhy.weibo.robot.util.Tools;
+import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,12 +24,10 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-@Lazy
-public class FansGroupDataPanel implements ActionListener, MouseListener {
+public class FansGroupDataPanel extends JPanel implements ActionListener, MouseListener {
     private Logger logger = LoggerFactory.getLogger(getClass());
     // 定义全局组件
-    JPanel mainPanel, topPanel, toolPanel, searchPanel, tablePanel, pagePanel;
+    JPanel topPanel, toolPanel, searchPanel, tablePanel, pagePanel;
     JComboBox cbType;
     BaseTableModule baseTableModule;
     JTable table;
@@ -37,14 +35,17 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
     JLabel lbType, tool_add, tool_modify, tool_delete;
 
     private MyFansTerm term = new MyFansTerm();
-    @Autowired
     private FansService fansService;
-    @Autowired
     private ModifyFansJFrame modifyFansJFrame;
+    private int id;
     private volatile boolean init;
 
-    public FansGroupDataPanel() {
-        mainPanel = new JPanel(new BorderLayout());
+    public FansGroupDataPanel(int id) {
+        this.id = id;
+        setLayout(new BorderLayout());
+        this.fansService = SpringContentUtil.getBean(FansService.class);
+        this.modifyFansJFrame = new ModifyFansJFrame();
+        init();
     }
 
     public void init() {
@@ -66,7 +67,7 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
         initToolPanel();
         initSearchPanel();
 
-        mainPanel.add(topPanel, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
     }
 
     // 初始化工具面板
@@ -88,9 +89,17 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
         tool_delete.setToolTipText("删除");
         tool_delete.addMouseListener(this);
 
+        JButton btnRefresh = new JButton("刷新");
+        btnRefresh.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
+        btnRefresh.setForeground(Color.white);
+        btnRefresh.setFont(MyFont.Static);
+        btnRefresh.setActionCommand("refresh");
+        btnRefresh.addActionListener(this);
+
         toolPanel.add(tool_add);
         toolPanel.add(tool_modify);
         toolPanel.add(tool_delete);
+        toolPanel.add(btnRefresh);
 
         topPanel.add(toolPanel, BorderLayout.WEST);
     }
@@ -142,13 +151,14 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
 
         tablePanel.add(jScrollPane);
 
-        mainPanel.add(tablePanel, "Center");
+        add(tablePanel, "Center");
     }
 
     private List<List<String>> loadData(long page, WordType type) {
         List<List<String>> data = new ArrayList<>();//列表数据
         term.setPage(page);
         term.setType(type);
+        term.setMemberId(id);
         Paging<MyFans> paging = fansService.findMyFans(term);
         for (MyFans fans : paging.getData()) {
             List<String> ll = new ArrayList<>();
@@ -169,7 +179,7 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
             pagePanel.removeAll();
         } else {
             pagePanel = new JPanel();
-            mainPanel.add(pagePanel, BorderLayout.SOUTH);
+            add(pagePanel, BorderLayout.SOUTH);
         }
         JLabel total = new JLabel("总共:" + term.getTotal() + "记录");
         pagePanel.add(total);
@@ -183,8 +193,8 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
 
     // 更新数据表格
     protected void refreshTablePanel(long page, WordType type) {
-        mainPanel.remove(tablePanel);
-        String params[] = {"ID", "关键词", "类型"};
+        remove(tablePanel);
+        String params[] = {"ID", "昵称", "主页", "头图", "类型"};
         List<List<String>> data = loadData(page, type);
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);
@@ -197,14 +207,14 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
 
         tablePanel.add(jScrollPane);
 
-        mainPanel.add(tablePanel, "Center");
-        mainPanel.validate();
+        add(tablePanel, "Center");
+        validate();
     }
 
     // 更新数据表格
     protected void refreshTablePanel() {
-        mainPanel.remove(tablePanel);
-        String params[] = {"ID", "关键词", "类型"};
+        remove(tablePanel);
+        String params[] = {"ID", "昵称", "主页", "头图", "类型"};
         List<List<String>> data = loadData(term.getPage(), term.getType());
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);
@@ -217,8 +227,8 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
 
         tablePanel.add(jScrollPane);
 
-        mainPanel.add(tablePanel, "Center");
-        mainPanel.validate();
+        add(tablePanel, "Center");
+        validate();
     }
 
     // 下拉框改变事件
@@ -231,6 +241,8 @@ public class FansGroupDataPanel implements ActionListener, MouseListener {
             //todo:  页面改变
         } else if (e.getSource() == cbType) {
             refreshTablePanel(1, ((JComboBoxItem<WordType>) cbType.getSelectedItem()).getData());
+        } else if (e.getActionCommand().equals("refresh")) {
+            refreshTablePanel();
         }
     }
 

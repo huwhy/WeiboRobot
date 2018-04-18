@@ -9,6 +9,7 @@ import cn.huwhy.weibo.robot.model.WordType;
 import cn.huwhy.weibo.robot.service.WordService;
 import cn.huwhy.weibo.robot.util.JComboBoxItem;
 import cn.huwhy.weibo.robot.util.ResourcesUtil;
+import cn.huwhy.weibo.robot.util.SpringContentUtil;
 import cn.huwhy.weibo.robot.util.Tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,10 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-@Lazy
-public class WordDataPanel implements ActionListener, MouseListener {
+public class WordDataPanel extends JPanel implements MouseListener, ActionListener {
     private Logger logger = LoggerFactory.getLogger(getClass());
     // 定义全局组件
-    JPanel backgroundPanel, topPanel, toolPanel, searchPanel, tablePanel, pagePanel;
+    JPanel topPanel, toolPanel, searchPanel, tablePanel, pagePanel;
     JComboBox cbType;
     BaseTableModule baseTableModule;
     JTable table;
@@ -38,26 +37,24 @@ public class WordDataPanel implements ActionListener, MouseListener {
     JLabel lbType, tool_add, tool_modify, tool_delete;
 
     private WordTerm term = new WordTerm();
-    @Autowired
     private WordService wordService;
-    @Autowired
     private AddWordJFrame addWordJFrame;
-    @Autowired
     private ModifyWordJFrame modifyWordJFrame;
     private Member member;
     private volatile boolean init;
 
-    public WordDataPanel() {
-        backgroundPanel = new JPanel(new BorderLayout());
-    }
-
-    public void setMember(Member member) {
+    public WordDataPanel(Member member) {
+        super(new BorderLayout());
         this.member = member;
+        this.addWordJFrame = new AddWordJFrame(this);
+        this.modifyWordJFrame = new ModifyWordJFrame();
+        init();
     }
 
     public void init() {
         if (!init) {
             init = true;
+            this.wordService = SpringContentUtil.getBean(WordService.class);
             initTopPanel();
             initTablePanel();
             initBottomPanel();
@@ -72,7 +69,7 @@ public class WordDataPanel implements ActionListener, MouseListener {
         initToolPanel();
         initSearchPanel();
 
-        backgroundPanel.add(topPanel, "North");
+        add(topPanel, "North");
     }
 
     // 初始化工具面板
@@ -129,18 +126,11 @@ public class WordDataPanel implements ActionListener, MouseListener {
 
     // 初始化数据表格面板
     public void initTablePanel() {
-        String params[] = {"ID", "关键词", "类型"};
+        String params[] = {"ID", "关键词", "类型", "出现次数"};
         List<List<String>> data = loadData(1, WordType.BLACK);
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);
         Tools.setTableStyle(table);
-//        DefaultTableColumnModel dcm = (DefaultTableColumnModel) table.getColumnModel();// 获取列模型
-//        dcm.getColumn(0).setMinWidth(0); // 将第一列的最小宽度、最大宽度都设置为0
-//        dcm.getColumn(0).setMaxWidth(0);
-//        dcm.getColumn(1).setMinWidth(0); // 将第8列的最小宽度、最大宽度都设置为0
-//        dcm.getColumn(1).setMaxWidth(0);
-//        dcm.getColumn(2).setMinWidth(0); // 将第9列的最小宽度、最大宽度都设置为0
-//        dcm.getColumn(2).setMaxWidth(0);
         jScrollPane = new JScrollPane(table);
         Tools.setJspStyle(jScrollPane);
 
@@ -149,7 +139,7 @@ public class WordDataPanel implements ActionListener, MouseListener {
 
         tablePanel.add(jScrollPane);
 
-        backgroundPanel.add(tablePanel, "Center");
+        add(tablePanel, "Center");
     }
 
     private List<List<String>> loadData(long page, WordType type) {
@@ -163,6 +153,7 @@ public class WordDataPanel implements ActionListener, MouseListener {
             ll.add(Long.toString(word.getId()));
             ll.add(word.getWord());
             ll.add(word.getType().getName());
+            ll.add(word.getHitNum() + "");
             data.add(ll);
         }
         this.term = (WordTerm) paging.getTerm();
@@ -175,7 +166,7 @@ public class WordDataPanel implements ActionListener, MouseListener {
             pagePanel.removeAll();
         } else {
             pagePanel = new JPanel();
-            backgroundPanel.add(pagePanel, BorderLayout.SOUTH);
+            add(pagePanel, BorderLayout.SOUTH);
         }
         JLabel total = new JLabel("总共:" + term.getTotal() + "记录");
         pagePanel.add(total);
@@ -189,7 +180,7 @@ public class WordDataPanel implements ActionListener, MouseListener {
 
     // 更新数据表格
     protected void refreshTablePanel(long page, WordType type) {
-        backgroundPanel.remove(tablePanel);
+        remove(tablePanel);
         String params[] = {"ID", "关键词", "类型"};
         List<List<String>> data = loadData(page, type);
         baseTableModule = new BaseTableModule(params, data);
@@ -203,13 +194,13 @@ public class WordDataPanel implements ActionListener, MouseListener {
 
         tablePanel.add(jScrollPane);
 
-        backgroundPanel.add(tablePanel, "Center");
-        backgroundPanel.validate();
+        add(tablePanel, "Center");
+        validate();
     }
 
     // 更新数据表格
     protected void refreshTablePanel() {
-        backgroundPanel.remove(tablePanel);
+        remove(tablePanel);
         String params[] = {"ID", "关键词", "类型"};
         List<List<String>> data = loadData(term.getPage(), term.getType());
         baseTableModule = new BaseTableModule(params, data);
@@ -223,8 +214,8 @@ public class WordDataPanel implements ActionListener, MouseListener {
 
         tablePanel.add(jScrollPane);
 
-        backgroundPanel.add(tablePanel, "Center");
-        backgroundPanel.validate();
+        add(tablePanel, "Center");
+        validate();
     }
 
     // 下拉框改变事件

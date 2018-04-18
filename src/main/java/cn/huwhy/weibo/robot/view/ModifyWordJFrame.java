@@ -5,9 +5,8 @@ import cn.huwhy.weibo.robot.model.WordType;
 import cn.huwhy.weibo.robot.service.WordService;
 import cn.huwhy.weibo.robot.util.JComboBoxItem;
 import cn.huwhy.weibo.robot.util.MyFont;
+import cn.huwhy.weibo.robot.util.SpringContentUtil;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +17,6 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 
-@Component
 public class ModifyWordJFrame extends JFrame implements MouseListener {
 
     // 定义全局组件
@@ -32,11 +30,11 @@ public class ModifyWordJFrame extends JFrame implements MouseListener {
     WordDataPanel parentPanel;
     private Word word;
 
-    @Autowired
     private WordService wordService;
 
     public void init(WordDataPanel parentPanel, long id) {
         this.parentPanel = parentPanel;
+        this.wordService = SpringContentUtil.getBean(WordService.class);
         this.word = wordService.get(id);
         initBackgroundPanel();
         this.add(backgroundPanel);

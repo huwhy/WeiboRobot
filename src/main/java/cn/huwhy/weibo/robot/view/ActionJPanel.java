@@ -1,22 +1,27 @@
 package cn.huwhy.weibo.robot.view;
 
+import cn.huwhy.weibo.robot.action.CommentAction;
+import cn.huwhy.weibo.robot.action.CommentSettingAction;
 import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.service.ChromeBrowserService;
 import cn.huwhy.weibo.robot.service.MemberService;
 import cn.huwhy.weibo.robot.util.MyFont;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
+import jdk.nashorn.internal.parser.DateParser;
 import org.apache.commons.lang.math.NumberUtils;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
+import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 
 /**
  * 用户管理功能面板
  */
-public class MemberManagerJPanel extends JPanel implements ActionListener {
+public class ActionJPanel extends JPanel implements ActionListener {
 
     // 定义全局组件
     private JPanel contentPanel, labelPanel, textPanel, buttonPanel;
@@ -24,9 +29,9 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
     private JPasswordField password = new JPasswordField(10);
     private JTextField wName = new JTextField(10);
     private JPasswordField wPassword = new JPasswordField(10);
-    private JTextField identify = new JTextField(10);
     private JTextField txBadNum = new JTextField(10);
-    private JButton btnModify, btnSave, btnLogout;
+    private JXDatePicker datePicker;
+    private JButton btnWbLogin, btnDelComment;
 
     // 定义用户对象
     private Member member = null;
@@ -34,7 +39,7 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
     private MemberService memberService;
     private ChromeBrowserService chromeBrowserService;
 
-    public MemberManagerJPanel(Member member, MainWindow mainWindow) {
+    public ActionJPanel(Member member, MainWindow mainWindow) {
 
         super();
 
@@ -72,13 +77,15 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
         JLabel label_identify = new JLabel("身份:", JLabel.CENTER);
         label_identify.setFont(MyFont.Static);
         JLabel lbBadNum = new JLabel("多少个黑评加入黑名单", JLabel.CENTER);
-
+        ;
         if (member != null) {
             username.setText(member.getName());
             password.setText(member.getPassword());
             wName.setText(member.getWbName());
             wPassword.setText(member.getWbPassword());
-            identify.setText("管理员");
+            datePicker = new JXDatePicker();
+            datePicker.setFormats("yyyy-MM-dd HH:mm");
+            datePicker.setDate(new Date());
             if (member.getConfig() != null) {
                 txBadNum.setText(member.getConfig().getBadNumLimit() + "");
             }
@@ -88,8 +95,6 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
         username.setEditable(false);
         password.setFont(MyFont.Static);
         password.setEditable(false);
-        identify.setFont(MyFont.Static);
-        identify.setEditable(false);
         wName.setFont(MyFont.Static);
         wName.setEditable(false);
         wPassword.setFont(MyFont.Static);
@@ -97,26 +102,19 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
         txBadNum.setFont(MyFont.Static);
         txBadNum.setEditable(false);
 
-        btnModify = new JButton("修改信息");
-        btnModify.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
-        btnModify.setForeground(Color.white);
-        btnModify.setFont(MyFont.Static);
-        btnModify.setActionCommand("modify");
-        btnModify.addActionListener(this);
+        btnWbLogin = new JButton("登录微博");
+        btnWbLogin.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
+        btnWbLogin.setForeground(Color.BLACK);
+        btnWbLogin.setFont(MyFont.Static);
+        btnWbLogin.setActionCommand("loginWb");
+        btnWbLogin.addActionListener(this);
 
-        btnSave = new JButton("保存修改");
-        btnSave.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.green));
-        btnSave.setForeground(Color.white);
-        btnSave.setFont(MyFont.Static);
-        btnSave.setActionCommand("save");
-        btnSave.addActionListener(this);
-
-        btnLogout = new JButton("退出");
-        btnLogout.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
-        btnLogout.setForeground(Color.white);
-        btnLogout.setFont(MyFont.Static);
-        btnLogout.setActionCommand("logout");
-        btnLogout.addActionListener(this);
+        btnDelComment = new JButton("删除评论");
+        btnDelComment.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
+        btnDelComment.setForeground(Color.BLACK);
+        btnDelComment.setFont(MyFont.Static);
+        btnDelComment.setActionCommand("delComment");
+        btnDelComment.addActionListener(this);
 
         labelPanel.add(label);
 
@@ -129,13 +127,12 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
         textPanel.add(lbWPwd);
         textPanel.add(wPassword);
         textPanel.add(label_identify);
-        textPanel.add(identify);
+        textPanel.add(datePicker);
         textPanel.add(lbBadNum);
         textPanel.add(txBadNum);
 
-        buttonPanel.add(btnSave);
-        buttonPanel.add(btnModify);
-        buttonPanel.add(btnLogout);
+        buttonPanel.add(btnWbLogin);
+        buttonPanel.add(btnDelComment);
 
         contentPanel.add(labelPanel, BorderLayout.NORTH);
         contentPanel.add(textPanel, BorderLayout.CENTER);
@@ -151,9 +148,8 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
         wPassword.setEditable(true);
         txBadNum.setEditable(true);
 
-        btnSave.setVisible(true);
-
-        btnModify.setVisible(false);
+        btnWbLogin.setVisible(false);
+        btnDelComment.setVisible(false);
 
     }
 
@@ -164,9 +160,8 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
         wPassword.setEditable(false);
         txBadNum.setEditable(false);
 
-        btnSave.setVisible(false);
-
-        btnModify.setVisible(true);
+        btnWbLogin.setVisible(true);
+        btnDelComment.setVisible(true);
     }
 
     @Override
@@ -219,8 +214,16 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
                     finishModifyUserContentPanel();
                 }
             }
-        } else if ("logout".equals(e.getActionCommand())) {
-            mainWindow.showLogin();
+        } else if (e.getActionCommand().equals("loginWb")) {
+            this.chromeBrowserService.login(this.member);
+        } else if (e.getActionCommand().equals("delComment")) {
+            CommentAction action = SpringContentUtil.getBean(CommentAction.class);
+            action.init(this.chromeBrowserService.getDriver(), this.member, datePicker.getDate());
+            action.run();
+//            CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);
+//            action.setDriver(this.chromeBrowserService.getDriver());
+//            action.setMemberConfig(this.member.getConfig());
+//            action.run();
         }
     }
 }
