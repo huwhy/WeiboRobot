@@ -251,6 +251,19 @@ public class ActionJPanel extends JPanel implements ActionListener {
         } else if (e.getActionCommand().equals("closeComment")) {
             taskService.submit(() -> {
                 CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);
+                WebDriver driver = this.chromeBrowserService.getDriver();
+                if (driver == null) {
+                    this.chromeBrowserService.login(member);
+                    ThreadUtil.sleepSeconds(1);
+                    while(true) {
+                        driver = this.chromeBrowserService.getDriver();
+                        if (!driver.getCurrentUrl().startsWith("https://weibo.com/u/")) {
+                            ThreadUtil.sleepSeconds(1);
+                        } else {
+                            break;
+                        }
+                    }
+                }
                 action.setDriver(this.chromeBrowserService.getDriver());
                 action.setMemberConfig(this.member.getConfig());
                 action.run();
