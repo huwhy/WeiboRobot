@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class CommentSettingAction {
 
@@ -29,6 +31,16 @@ public class CommentSettingAction {
             while(true) {
                 try {
                     ActionUtil.click(el, ".gn_topmenulist_set ul li:nth-child(1)");
+                    ActionUtil.click(driver, ".ico_message");
+                    ActionUtil.click(driver, "#pl_message_comment .set_opt");
+                    List<WebElement> list = driver.findElements(By.cssSelector("#pl_message_comment input[name=comment]"));
+                    for (WebElement e : list) {
+                        if (e.getAttribute("value").equals("1")) {
+                            e.click();
+                        }
+                    }
+                    ActionUtil.click(driver, "#pl_message_comment .W_btn_a[action-type=save]");
+                    break;
                 } catch (Throwable ignore){}
             }
         } finally {

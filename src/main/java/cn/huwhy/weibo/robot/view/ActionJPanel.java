@@ -1,16 +1,18 @@
 package cn.huwhy.weibo.robot.view;
 
+import cn.huwhy.common.util.ThreadUtil;
 import cn.huwhy.weibo.robot.action.CommentAction;
 import cn.huwhy.weibo.robot.action.CommentSettingAction;
 import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.service.ChromeBrowserService;
 import cn.huwhy.weibo.robot.service.MemberService;
+import cn.huwhy.weibo.robot.service.TaskService;
 import cn.huwhy.weibo.robot.util.MyFont;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
-import jdk.nashorn.internal.parser.DateParser;
 import org.apache.commons.lang.math.NumberUtils;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import org.jdesktop.swingx.JXDatePicker;
+import org.openqa.selenium.WebDriver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,13 +33,14 @@ public class ActionJPanel extends JPanel implements ActionListener {
     private JPasswordField wPassword = new JPasswordField(10);
     private JTextField txBadNum = new JTextField(10);
     private JXDatePicker datePicker;
-    private JButton btnWbLogin, btnDelComment;
+    private JButton btnWbLogin, btnDelComment, btnCloseComment;
 
     // 定义用户对象
     private Member member = null;
     private MainWindow mainWindow = null;
     private MemberService memberService;
     private ChromeBrowserService chromeBrowserService;
+    private TaskService taskService;
 
     public ActionJPanel(Member member, MainWindow mainWindow) {
 
@@ -49,6 +52,7 @@ public class ActionJPanel extends JPanel implements ActionListener {
 
         this.memberService = SpringContentUtil.getBean(MemberService.class);
         this.chromeBrowserService = SpringContentUtil.getBean(ChromeBrowserService.class);
+        this.taskService = SpringContentUtil.getBean(TaskService.class);
     }
 
     public void initContentPanel() {
@@ -109,12 +113,19 @@ public class ActionJPanel extends JPanel implements ActionListener {
         btnWbLogin.setActionCommand("loginWb");
         btnWbLogin.addActionListener(this);
 
-        btnDelComment = new JButton("删除评论");
+        btnDelComment = new JButton("删除评论任务");
         btnDelComment.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
         btnDelComment.setForeground(Color.BLACK);
         btnDelComment.setFont(MyFont.Static);
         btnDelComment.setActionCommand("delComment");
         btnDelComment.addActionListener(this);
+
+        btnCloseComment = new JButton("关闭粉丝评论");
+        btnCloseComment.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
+        btnCloseComment.setForeground(Color.BLACK);
+        btnCloseComment.setFont(MyFont.Static);
+        btnCloseComment.setActionCommand("closeComment");
+        btnCloseComment.addActionListener(this);
 
         labelPanel.add(label);
 
@@ -133,6 +144,7 @@ public class ActionJPanel extends JPanel implements ActionListener {
 
         buttonPanel.add(btnWbLogin);
         buttonPanel.add(btnDelComment);
+        buttonPanel.add(btnCloseComment);
 
         contentPanel.add(labelPanel, BorderLayout.NORTH);
         contentPanel.add(textPanel, BorderLayout.CENTER);
@@ -217,13 +229,32 @@ public class ActionJPanel extends JPanel implements ActionListener {
         } else if (e.getActionCommand().equals("loginWb")) {
             this.chromeBrowserService.login(this.member);
         } else if (e.getActionCommand().equals("delComment")) {
-            CommentAction action = SpringContentUtil.getBean(CommentAction.class);
-            action.init(this.chromeBrowserService.getDriver(), this.member, datePicker.getDate());
-            action.run();
-//            CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);
-//            action.setDriver(this.chromeBrowserService.getDriver());
-//            action.setMemberConfig(this.member.getConfig());
-//            action.run();
+            taskService.submit(() -> {
+                CommentAction action = SpringContentUtil.getBean(CommentAction.class);
+                WebDriver driver = this.chromeBrowserService.getDriver();
+                if (driver == null) {
+                    this.chromeBrowserService.login(member);
+                    ThreadUtil.sleepSeconds(1);
+                    while(true) {
+                        driver = this.chromeBrowserService.getDriver();
+                        if (!driver.getCurrentUrl().startsWith("https://weibo.com/u/")) {
+                            ThreadUtil.sleepSeconds(1);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                action.init(driver, this.member, datePicker.getDate());
+                action.run();
+
+            }, 10);
+        } else if (e.getActionCommand().equals("closeComment")) {
+            taskService.submit(() -> {
+                CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);
+                action.setDriver(this.chromeBrowserService.getDriver());
+                action.setMemberConfig(this.member.getConfig());
+                action.run();
+            });
         }
     }
 }

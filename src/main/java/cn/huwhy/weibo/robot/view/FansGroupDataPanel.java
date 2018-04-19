@@ -215,7 +215,7 @@ public class FansGroupDataPanel extends JPanel implements ActionListener, MouseL
     protected void refreshTablePanel() {
         remove(tablePanel);
         String params[] = {"ID", "昵称", "主页", "头图", "类型"};
-        List<List<String>> data = loadData(term.getPage(), term.getType());
+        List<List<String>> data = loadData(term.getPage(), null);
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);
         Tools.setTableStyle(table);
