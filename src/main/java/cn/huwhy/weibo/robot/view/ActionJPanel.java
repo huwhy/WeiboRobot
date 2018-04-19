@@ -247,7 +247,7 @@ public class ActionJPanel extends JPanel implements ActionListener {
                 action.init(driver, this.member, datePicker.getDate());
                 action.run();
 
-            }, 10);
+            }, 10 * 60);
         } else if (e.getActionCommand().equals("closeComment")) {
             taskService.submit(() -> {
                 CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);
