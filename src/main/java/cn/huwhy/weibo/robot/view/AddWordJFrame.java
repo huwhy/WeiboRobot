@@ -13,10 +13,12 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class AddWordJFrame extends JFrame implements MouseListener {
+public class AddWordJFrame extends JFrame implements ActionListener {
 
     // 定义全局组件
     JPanel backgroundPanel, labelPanel, contentPanel, buttonPanel;
@@ -33,6 +35,7 @@ public class AddWordJFrame extends JFrame implements MouseListener {
     WordDataPanel parentPanel;
 
     private WordService wordService;
+
     private volatile boolean init;
     private Member member;
 
@@ -51,7 +54,7 @@ public class AddWordJFrame extends JFrame implements MouseListener {
             this.parentPanel = parentPanel;
             initBackgroundPanel();
             this.add(backgroundPanel);
-            this.setTitle("添加关键词");
+            this.setTitle("添加自定义关键词");
             this.setSize(640, 360);
             this.setVisible(true);
             this.setLocationRelativeTo(null);
@@ -77,7 +80,7 @@ public class AddWordJFrame extends JFrame implements MouseListener {
 
         labelPanel = new JPanel();
 
-        JLabel title = new JLabel("添加关键词");
+        JLabel title = new JLabel("添加自定义关键词");
         title.setFont(MyFont.Static);
 
         labelPanel.add(title);
@@ -87,8 +90,8 @@ public class AddWordJFrame extends JFrame implements MouseListener {
     public void initContentPanel() {
         contentPanel = new JPanel(new GridLayout(6, 2));
 
-        lbWord = new JLabel("关键词", JLabel.CENTER);
-        lbType = new JLabel("类型", JLabel.CENTER);
+        lbWord = new JLabel("自定义关键词", JLabel.CENTER);
+        lbType = new JLabel("关键词类型", JLabel.CENTER);
 
         txWord = new JTextField("");
 
@@ -116,18 +119,18 @@ public class AddWordJFrame extends JFrame implements MouseListener {
         btnAdd.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         btnAdd.setForeground(Color.white);
         btnAdd.setFont(MyFont.Static);
-        btnAdd.addMouseListener(this);
+        btnAdd.setActionCommand("save");
+        btnAdd.addActionListener(this);
 
         buttonPanel.add(btnAdd);
     }
 
-    // 鼠标点击事件
     @Override
-    public void mouseClicked(MouseEvent e) {
-        if (e.getSource() == btnAdd) {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("save")) {
             String word = txWord.getText().trim();
             if (word.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "请输入关键词");
+                JOptionPane.showMessageDialog(null, "请输入自定义关键词");
             } else {
                 WordType type = ((JComboBoxItem<WordType>) cbType.getSelectedItem()).getData();
                 Word word1 = new Word();
@@ -135,35 +138,11 @@ public class AddWordJFrame extends JFrame implements MouseListener {
                 word1.setType(type);
                 word1.setMemberId(this.member.getId());
                 wordService.save(word1);
-                JOptionPane.showMessageDialog(null, "添加关键词成功");
+                JOptionPane.showMessageDialog(null, "添加自定义关键词成功");
                 this.setVisible(false);
                 parentPanel.refreshTablePanel(1, null);
             }
         }
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent arg0) {
-        // TODO Auto-generated method stub
 
     }
 

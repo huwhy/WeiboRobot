@@ -66,7 +66,7 @@ public class ModifyFansJFrame extends JFrame implements MouseListener {
 
         labelPanel = new JPanel();
 
-        JLabel title = new JLabel("关键词信息");
+        JLabel title = new JLabel("自定义关键词信息");
         title.setFont(MyFont.Static);
 
         labelPanel.add(title);
@@ -75,8 +75,8 @@ public class ModifyFansJFrame extends JFrame implements MouseListener {
     // 初始化商品信息面板
     public void initContentPanel() {
         contentPanel = new JPanel(new GridLayout(6, 2));
-        lbWord = new JLabel("关键词", JLabel.CENTER);
-        lbType = new JLabel("类型", JLabel.CENTER);
+        lbWord = new JLabel("自定义关键词", JLabel.CENTER);
+        lbType = new JLabel("粉丝类型", JLabel.CENTER);
 
         txWord = new JTextField(word.getWord());
         // 商品种类下拉框
@@ -122,7 +122,7 @@ public class ModifyFansJFrame extends JFrame implements MouseListener {
 
             String txValue = txWord.getText().trim();
             if (txValue.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "请输入关键词");
+                JOptionPane.showMessageDialog(null, "请输入自定义关键词");
             } else {
                 WordType type = ((JComboBoxItem<WordType>) cbType.getSelectedItem()).getData();
                 word.setType(type);

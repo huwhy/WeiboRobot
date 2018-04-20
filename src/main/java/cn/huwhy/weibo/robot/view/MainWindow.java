@@ -11,7 +11,7 @@ import java.io.IOException;
 public class MainWindow extends JFrame {
 
     private JPanel loginPanel;
-    private JTabbedPane mainPanel;
+    private MainPanel mainPanel;
 
     public MainWindow() {
 
@@ -23,7 +23,7 @@ public class MainWindow extends JFrame {
             e.printStackTrace();
         }
 
-        this.setTitle(" 神盾微博舆情监测系统");
+        this.setTitle(" 神盾微博舆情监测系统 私人定制V1.0");
         this.setSize(1152, 720);
 
 
@@ -58,5 +58,9 @@ public class MainWindow extends JFrame {
             loginPanel.setEnabled(false);
             loginPanel.setVisible(false);
         }
+    }
+
+    public void addTabs() {
+        mainPanel.addTabs();
     }
 }

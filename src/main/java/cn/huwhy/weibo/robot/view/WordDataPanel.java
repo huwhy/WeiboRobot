@@ -26,7 +26,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordDataPanel extends JPanel implements MouseListener, ActionListener {
+public class WordDataPanel extends JPanel implements ActionListener {
     private Logger logger = LoggerFactory.getLogger(getClass());
     // 定义全局组件
     JPanel topPanel, toolPanel, searchPanel, tablePanel, pagePanel;
@@ -34,7 +34,8 @@ public class WordDataPanel extends JPanel implements MouseListener, ActionListen
     BaseTableModule baseTableModule;
     JTable table;
     JScrollPane jScrollPane;
-    JLabel lbType, tool_add, tool_modify, tool_delete;
+    JLabel lbType;
+    JButton tool_add, tool_modify, tool_delete;
 
     private WordTerm term = new WordTerm();
     private WordService wordService;
@@ -77,20 +78,20 @@ public class WordDataPanel extends JPanel implements MouseListener, ActionListen
 
         toolPanel = new JPanel();
         // 工具图标
-        Icon icon_add = new ImageIcon(ResourcesUtil.getImage("add.png"));
-        tool_add = new JLabel(icon_add);
+        tool_add = new JButton("添加关键词");
         tool_add.setToolTipText("添加");
-        tool_add.addMouseListener(this);
+        tool_add.setActionCommand("addWord");
+        tool_add.addActionListener(this);
 
-        Icon icon_modify = new ImageIcon(ResourcesUtil.getImage("modify.png"));
-        tool_modify = new JLabel(icon_modify);
+        tool_modify = new JButton("修改关键词");
         tool_modify.setToolTipText("修改");
-        tool_modify.addMouseListener(this);
+        tool_modify.setActionCommand("chgWord");
+        tool_modify.addActionListener(this);
 
-        Icon icon_delete = new ImageIcon(ResourcesUtil.getImage("delete.png"));
-        tool_delete = new JLabel(icon_delete);
+        tool_delete = new JButton("删除关键词");
         tool_delete.setToolTipText("删除");
-        tool_delete.addMouseListener(this);
+        tool_delete.setActionCommand("delWord");
+        tool_delete.addActionListener(this);
 
         toolPanel.add(tool_add);
         toolPanel.add(tool_modify);
@@ -181,7 +182,7 @@ public class WordDataPanel extends JPanel implements MouseListener, ActionListen
     // 更新数据表格
     protected void refreshTablePanel(long page, WordType type) {
         remove(tablePanel);
-        String params[] = {"ID", "关键词", "类型"};
+        String params[] = {"ID", "关键词", "类型", "出现次数"};
         List<List<String>> data = loadData(page, type);
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);
@@ -201,7 +202,7 @@ public class WordDataPanel extends JPanel implements MouseListener, ActionListen
     // 更新数据表格
     protected void refreshTablePanel() {
         remove(tablePanel);
-        String params[] = {"ID", "关键词", "类型"};
+        String params[] = {"ID", "关键词", "类型", "出现次数"};
         List<List<String>> data = loadData(term.getPage(), term.getType());
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);
@@ -221,23 +222,10 @@ public class WordDataPanel extends JPanel implements MouseListener, ActionListen
     // 下拉框改变事件
     @Override
     public void actionPerformed(ActionEvent e) {
-        if ("page".equals(e.getActionCommand())) {
-            String page = ((JButton) e.getSource()).getText();
-            logger.debug("page change: {} - {}", e.getActionCommand(), page);
-            refreshTablePanel(Long.valueOf(page), null);
-            //todo:  页面改变
-        } else if (e.getSource() == cbType) {
-            refreshTablePanel(1, ((JComboBoxItem<WordType>) cbType.getSelectedItem()).getData());
-        }
-    }
-
-    // 鼠标点击事件
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        if (e.getSource() == tool_add) {
+        if ("addWord".equals(e.getActionCommand())) {
             this.addWordJFrame.setMember(member);
             this.addWordJFrame.init(this);
-        } else if (e.getSource() == tool_modify) {
+        } else if ("chgWord".equals(e.getActionCommand())) {
             int row = table.getSelectedRow();
             if (row < 0) {
                 JOptionPane.showMessageDialog(null, "请选择数据");
@@ -245,8 +233,7 @@ public class WordDataPanel extends JPanel implements MouseListener, ActionListen
                 String id = (String) table.getValueAt(row, 0);
                 this.modifyWordJFrame.init(this, Long.valueOf(id));
             }
-
-        } else if (e.getSource() == tool_delete) {
+        } else if ("delWord".equals(e.getActionCommand())) {
             int row = table.getSelectedRow();
             if (row < 0) {
                 JOptionPane.showMessageDialog(null, "请选择数据");
@@ -263,38 +250,14 @@ public class WordDataPanel extends JPanel implements MouseListener, ActionListen
                     }
                 }
             }
+        } else if ("page".equals(e.getActionCommand())) {
+            String page = ((JButton) e.getSource()).getText();
+            logger.debug("page change: {} - {}", e.getActionCommand(), page);
+            refreshTablePanel(Long.valueOf(page), null);
+            //todo:  页面改变
+        } else if (e.getSource() == cbType) {
+            refreshTablePanel(1, ((JComboBoxItem<WordType>) cbType.getSelectedItem()).getData());
         }
-
-    }
-
-    // 鼠标划入事件
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        if (e.getSource() == tool_add) {
-            tool_add.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        } else if (e.getSource() == tool_modify) {
-            tool_modify.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        } else if (e.getSource() == tool_delete) {
-            tool_delete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        }
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        // TODO Auto-generated method stub
-
     }
 
 }

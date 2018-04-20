@@ -13,6 +13,8 @@ public class MainPanel extends JTabbedPane implements ActionListener {
 
     private MainWindow mainWindow;
     private Member member;
+    private volatile boolean addTabs = false;
+    private MemberManagerJPanel memberManagerJPanel;
 
     public MainPanel(MainWindow mainWindow, Member member) {
         super(JTabbedPane.TOP);
@@ -34,10 +36,21 @@ public class MainPanel extends JTabbedPane implements ActionListener {
         btnSecond.setActionCommand("login");
         btnSecond.addActionListener(this);
         panel1.add(btnSecond);
-        addTab("用户设置", new MemberManagerJPanel(member, mainWindow));
-        addTab("关键词", new WordDataPanel(member));
-        addTab("粉丝", new FansGroupDataPanel(member.getId()));
-        addTab("操作", new ActionJPanel(member, mainWindow));
+        memberManagerJPanel = new MemberManagerJPanel(member, mainWindow);
+        addTab("微博帐户登录", memberManagerJPanel);
+//        addTab("自定义关键词", new WordDataPanel(member));
+//        addTab("粉丝管理", new FansGroupDataPanel(member.getId()));
+//        addTab("任务管理", new ActionJPanel(member, mainWindow));
+    }
+
+    public void addTabs() {
+        if (!addTabs) {
+            remove(memberManagerJPanel);
+            addTabs = true;
+            addTab("任务中心", new ActionJPanel(member, mainWindow));
+            addTab("自定义敏感词", new WordDataPanel(member));
+            addTab("粉丝管理", new FansGroupDataPanel(member.getId()));
+        }
     }
 
     @Override

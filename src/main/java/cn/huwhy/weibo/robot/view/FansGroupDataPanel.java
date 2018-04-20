@@ -32,7 +32,7 @@ public class FansGroupDataPanel extends JPanel implements ActionListener, MouseL
     BaseTableModule baseTableModule;
     JTable table;
     JScrollPane jScrollPane;
-    JLabel lbType, tool_add, tool_modify, tool_delete;
+    JLabel lbType;
 
     private MyFansTerm term = new MyFansTerm();
     private FansService fansService;
@@ -75,19 +75,19 @@ public class FansGroupDataPanel extends JPanel implements ActionListener, MouseL
 
         toolPanel = new JPanel();
         Icon iconAdd = new ImageIcon(ResourcesUtil.getImage("add.png"));
-        tool_add = new JLabel(iconAdd);
-        tool_add.setToolTipText("添加");
-        tool_add.addMouseListener(this);
+//        tool_add = new JLabel(iconAdd);
+//        tool_add.setToolTipText("添加");
+//        tool_add.addMouseListener(this);
 
         Icon iconModify = new ImageIcon(ResourcesUtil.getImage("modify.png"));
-        tool_modify = new JLabel(iconModify);
-        tool_modify.setToolTipText("修改");
-        tool_modify.addMouseListener(this);
+//        tool_modify = new JLabel(iconModify);
+//        tool_modify.setToolTipText("修改");
+//        tool_modify.addMouseListener(this);
 
         Icon iconDelete = new ImageIcon(ResourcesUtil.getImage("delete.png"));
-        tool_delete = new JLabel(iconDelete);
-        tool_delete.setToolTipText("删除");
-        tool_delete.addMouseListener(this);
+//        tool_delete = new JLabel(iconDelete);
+//        tool_delete.setToolTipText("删除");
+//        tool_delete.addMouseListener(this);
 
         JButton btnRefresh = new JButton("刷新");
         btnRefresh.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
@@ -96,9 +96,9 @@ public class FansGroupDataPanel extends JPanel implements ActionListener, MouseL
         btnRefresh.setActionCommand("refresh");
         btnRefresh.addActionListener(this);
 
-        toolPanel.add(tool_add);
-        toolPanel.add(tool_modify);
-        toolPanel.add(tool_delete);
+//        toolPanel.add(tool_add);
+//        toolPanel.add(tool_modify);
+//        toolPanel.add(tool_delete);
         toolPanel.add(btnRefresh);
 
         topPanel.add(toolPanel, BorderLayout.WEST);
@@ -121,7 +121,8 @@ public class FansGroupDataPanel extends JPanel implements ActionListener, MouseL
         cbType.addActionListener(this);
 
         // 标签
-        lbType = new JLabel("类型");
+        lbType = new JLabel("粉丝类型");
+        lbType.setFont(MyFont.Static);
 
         searchPanel.add(lbType);
         searchPanel.add(cbType);
@@ -187,6 +188,7 @@ public class FansGroupDataPanel extends JPanel implements ActionListener, MouseL
             JButton btn = new JButton("" + i);
             btn.addActionListener(this);
             btn.setActionCommand("page");
+            btn.setFont(MyFont.Static);
             pagePanel.add(btn);
         }
     }
@@ -249,28 +251,28 @@ public class FansGroupDataPanel extends JPanel implements ActionListener, MouseL
     // 鼠标点击事件
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getSource() == tool_modify) {
-            int row = table.getSelectedRow();
-            if (row < 0) {
-                JOptionPane.showMessageDialog(null, "请选择数据");
-            } else {
-                String id = (String) table.getValueAt(row, 0);
-                this.modifyFansJFrame.init(this, Long.valueOf(id));
-            }
-
-        }
+//        if (e.getSource() == tool_modify) {
+//            int row = table.getSelectedRow();
+//            if (row < 0) {
+//                JOptionPane.showMessageDialog(null, "请选择数据");
+//            } else {
+//                String id = (String) table.getValueAt(row, 0);
+//                this.modifyFansJFrame.init(this, Long.valueOf(id));
+//            }
+//
+//        }
     }
 
     // 鼠标划入事件
     @Override
     public void mouseEntered(MouseEvent e) {
-        if (e.getSource() == tool_add) {
-            tool_add.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        } else if (e.getSource() == tool_modify) {
-            tool_modify.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        } else if (e.getSource() == tool_delete) {
-            tool_delete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        }
+//        if (e.getSource() == tool_add) {
+//            tool_add.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//        } else if (e.getSource() == tool_modify) {
+//            tool_modify.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//        } else if (e.getSource() == tool_delete) {
+//            tool_delete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//        }
     }
 
     @Override

@@ -1,11 +1,12 @@
 package cn.huwhy.weibo.robot.view;
 
+import cn.huwhy.common.util.RandomUtil;
 import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.service.ChromeBrowserService;
 import cn.huwhy.weibo.robot.service.MemberService;
 import cn.huwhy.weibo.robot.util.MyFont;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 
 import javax.swing.*;
@@ -20,13 +21,13 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
 
     // 定义全局组件
     private JPanel contentPanel, labelPanel, textPanel, buttonPanel;
-    private JTextField username = new JTextField(10);
-    private JPasswordField password = new JPasswordField(10);
     private JTextField wName = new JTextField(10);
+    private JTextField txCode = new JTextField(10);
     private JPasswordField wPassword = new JPasswordField(10);
-    private JTextField identify = new JTextField(10);
-    private JTextField txBadNum = new JTextField(10);
-    private JButton btnModify, btnSave, btnLogout;
+    private JButton btnSave, btnLogout, btnWbLogin;
+    private String code;
+    private JButton codeRefresh;
+    private JLabel lbCodeTip, lbCode;
 
     // 定义用户对象
     private Member member = null;
@@ -52,57 +53,44 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
         contentPanel.setOpaque(false);
         labelPanel = new JPanel();
         labelPanel.setOpaque(false);
-        textPanel = new JPanel(new GridLayout(3, 2, 0, 20));
+        textPanel = new JPanel(new GridLayout(5, 2, 0, 20));
         textPanel.setOpaque(false);
         buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
 
         JLabel label = new JLabel();
-        label.setText("<html><h2 style='text-align:center;'>个人信息</h2></html>");
+        label.setText("<html><h2 style='text-align:center;'>微博帐户登录</h2></html>");
         label.setFont(MyFont.Static);
 
-        JLabel label_username = new JLabel("用户名:", JLabel.CENTER);
-        label_username.setFont(MyFont.Static);
-        JLabel label_password = new JLabel("密码:", JLabel.CENTER);
-        label_password.setFont(MyFont.Static);
-        JLabel lbWName = new JLabel("微博帐号:", JLabel.CENTER);
+        JLabel lbWName = new JLabel("微博帐号:", JLabel.LEFT);
         lbWName.setFont(MyFont.Static);
-        JLabel lbWPwd = new JLabel("微博密码:", JLabel.CENTER);
+        JLabel lbWPwd = new JLabel("微博密码:", JLabel.LEFT);
         lbWPwd.setFont(MyFont.Static);
-        JLabel label_identify = new JLabel("身份:", JLabel.CENTER);
-        label_identify.setFont(MyFont.Static);
-        JLabel lbBadNum = new JLabel("多少个黑评加入黑名单", JLabel.CENTER);
 
         if (member != null) {
-            username.setText(member.getName());
-            password.setText(member.getPassword());
             wName.setText(member.getWbName());
             wPassword.setText(member.getWbPassword());
-            identify.setText("管理员");
-            if (member.getConfig() != null) {
-                txBadNum.setText(member.getConfig().getBadNumLimit() + "");
-            }
         }
 
-        username.setFont(MyFont.Static);
-        username.setEditable(false);
-        password.setFont(MyFont.Static);
-        password.setEditable(false);
-        identify.setFont(MyFont.Static);
-        identify.setEditable(false);
         wName.setFont(MyFont.Static);
         wName.setEditable(false);
         wPassword.setFont(MyFont.Static);
-        wPassword.setEditable(false);
-        txBadNum.setFont(MyFont.Static);
-        txBadNum.setEditable(false);
+        wPassword.setEditable(true);
 
-        btnModify = new JButton("修改信息");
-        btnModify.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
-        btnModify.setForeground(Color.white);
-        btnModify.setFont(MyFont.Static);
-        btnModify.setActionCommand("modify");
-        btnModify.addActionListener(this);
+
+        btnWbLogin = new JButton("登录微博");
+        btnWbLogin.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
+        btnWbLogin.setForeground(Color.BLACK);
+        btnWbLogin.setFont(MyFont.Static);
+        btnWbLogin.setActionCommand("loginWb");
+        btnWbLogin.addActionListener(this);
+
+//        btnModify = new JButton("修改信息");
+//        btnModify.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
+//        btnModify.setForeground(Color.white);
+//        btnModify.setFont(MyFont.Static);
+//        btnModify.setActionCommand("modify");
+//        btnModify.addActionListener(this);
 
         btnSave = new JButton("保存修改");
         btnSave.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.green));
@@ -120,22 +108,40 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
 
         labelPanel.add(label);
 
-        textPanel.add(label_username);
-        textPanel.add(username);
-        textPanel.add(label_password);
-        textPanel.add(password);
         textPanel.add(lbWName);
         textPanel.add(wName);
+        textPanel.add(new JLabel("备注:", JLabel.LEFT));
+        textPanel.add(new JLabel("微博帐户设置后不能更改"));
         textPanel.add(lbWPwd);
         textPanel.add(wPassword);
-        textPanel.add(label_identify);
-        textPanel.add(identify);
-        textPanel.add(lbBadNum);
-        textPanel.add(txBadNum);
+        lbCode = new JLabel("验证码:", JLabel.LEFT);
+        lbCode.setFont(MyFont.Static);
+        txCode.setFont(MyFont.Static);
+        txCode.setEditable(true);
+        textPanel.add(lbCode);
+        textPanel.add(txCode);
+        this.code = RandomUtil.getRandomString(4);
+        lbCodeTip = new JLabel("请输入验证码:", JLabel.LEFT);
+        lbCodeTip.setFont(MyFont.Static);
+        textPanel.add(lbCodeTip);
+        codeRefresh = new JButton(code + " 刷新");
+        codeRefresh.addActionListener(e -> {
+            MemberManagerJPanel.this.code = RandomUtil.getRandomString(4);
+            MemberManagerJPanel.this.codeRefresh.setText("" + code + " 刷新");
+        });
+        textPanel.add(codeRefresh);
 
-        buttonPanel.add(btnSave);
-        buttonPanel.add(btnModify);
-        buttonPanel.add(btnLogout);
+        buttonPanel.setLayout(new BorderLayout());
+        JPanel btnPanel = new JPanel();
+        btnPanel.add(btnWbLogin);
+        btnPanel.add(btnSave);
+        btnPanel.add(btnLogout);
+        buttonPanel.add(btnPanel, BorderLayout.NORTH);
+        JLabel jbTip = new JLabel("神盾微博舆情监测系统, 私人定制！V1.0", JLabel.CENTER);
+        jbTip.setForeground(Color.red);
+        jbTip.setFont(MyFont.Static2);
+        buttonPanel.add(new JLabel(""), BorderLayout.CENTER);
+        buttonPanel.add(jbTip, BorderLayout.SOUTH);
 
         contentPanel.add(labelPanel, BorderLayout.NORTH);
         contentPanel.add(textPanel, BorderLayout.CENTER);
@@ -145,28 +151,20 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
     }
 
     public void modifyUserContentPanel() {
-        username.setEditable(true);
-        password.setEditable(true);
-        wName.setEditable(true);
+        if (Strings.isBlank(wName.getText())) {
+            wName.setEditable(true);
+        }
         wPassword.setEditable(true);
-        txBadNum.setEditable(true);
 
         btnSave.setVisible(true);
 
-        btnModify.setVisible(false);
 
     }
 
     public void finishModifyUserContentPanel() {
-        username.setEditable(false);
-        password.setEditable(false);
         wName.setEditable(false);
-        wPassword.setEditable(false);
-        txBadNum.setEditable(false);
-
+//        wPassword.setEditable(false);
         btnSave.setVisible(false);
-
-        btnModify.setVisible(true);
     }
 
     @Override
@@ -189,38 +187,27 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
                     mainWindow.showLogin();
                 }
             }
-        } else if (e.getActionCommand().equals("save")) {
-            String username = this.username.getText().trim();
-            String password = new String(this.password.getPassword());
-            String wbName = wName.getText().trim();
-            String wbPwd = new String(wPassword.getPassword());
-            String badNum = txBadNum.getText();
-            if (!NumberUtils.isDigits(badNum)) {
-                JOptionPane.showMessageDialog(null, "加入黑名单黑评数必需为整数");
-                return;
-            }
-            if (username.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "用户名不能为空");
-            } else if (password.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "用户密码不能为空");
-            } else {
-                this.member.setName(username);
-                boolean chgPwd = !this.member.getPassword().equals(password);
-                this.member.setPassword(password);
-                this.member.setWbName(wbName);
-                this.member.setWbPassword(wbPwd);
-                this.member.getConfig().setBadNumLimit(Integer.parseInt(badNum));
-                this.memberService.save(member);
-                if (chgPwd) {
-                    JOptionPane.showMessageDialog(null, "用户信息修改成功,请您重新登陆");
-                    mainWindow.showLogin();
-                } else {
-                    JOptionPane.showMessageDialog(null, "用户信息修改成功");
-                    finishModifyUserContentPanel();
-                }
-            }
+//        } else if (e.getActionCommand().equals("save")) {
+//            String wbName = wName.getText().trim();
+//            String wbPwd = new String(wPassword.getPassword());
+//            this.member.setWbName(wbName);
+//            this.member.setWbPassword(wbPwd);
+//            this.memberService.save(member);
+//            JOptionPane.showMessageDialog(null, "用户信息修改成功");
+//            finishModifyUserContentPanel();
         } else if ("logout".equals(e.getActionCommand())) {
             mainWindow.showLogin();
+        } else if (e.getActionCommand().equals("loginWb")) {
+            if (code.equalsIgnoreCase(txCode.getText())) {
+                this.codeRefresh.setVisible(false);
+                this.lbCodeTip.setVisible(false);
+                this.lbCode.setVisible(false);
+                this.txCode.setVisible(false);
+                mainWindow.addTabs();
+                this.chromeBrowserService.login(this.member);
+            } else {
+                JOptionPane.showMessageDialog(null, "请输入正确的验证码");
+            }
         }
     }
 }

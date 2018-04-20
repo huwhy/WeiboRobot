@@ -10,6 +10,8 @@ import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -17,7 +19,7 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 
-public class ModifyWordJFrame extends JFrame implements MouseListener {
+public class ModifyWordJFrame extends JFrame implements ActionListener {
 
     // 定义全局组件
     JPanel backgroundPanel, labelPanel, contentPanel, buttonPanel;
@@ -29,6 +31,7 @@ public class ModifyWordJFrame extends JFrame implements MouseListener {
     // 表格对象
     WordDataPanel parentPanel;
     private Word word;
+    private volatile boolean init;
 
     private WordService wordService;
 
@@ -38,7 +41,7 @@ public class ModifyWordJFrame extends JFrame implements MouseListener {
         this.word = wordService.get(id);
         initBackgroundPanel();
         this.add(backgroundPanel);
-        this.setTitle("修改关键词");
+        this.setTitle("修改自定义关键词");
         this.setSize(640, 360);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
@@ -63,7 +66,7 @@ public class ModifyWordJFrame extends JFrame implements MouseListener {
 
         labelPanel = new JPanel();
 
-        JLabel title = new JLabel("关键词信息");
+        JLabel title = new JLabel("自定义关键词信息");
         title.setFont(MyFont.Static);
 
         labelPanel.add(title);
@@ -72,31 +75,50 @@ public class ModifyWordJFrame extends JFrame implements MouseListener {
     // 初始化商品信息面板
     public void initContentPanel() {
         contentPanel = new JPanel(new GridLayout(6, 2));
-        lbWord = new JLabel("关键词", JLabel.CENTER);
-        lbType = new JLabel("类型", JLabel.CENTER);
-
-        txWord = new JTextField(word.getWord());
-        // 商品种类下拉框
-        cbType = new JComboBox();
-        int cbIndex = 0, i = 0;
-        for (WordType type : WordType.values()) {
-            if (word.getType().equals(type)) {
-                cbIndex = i;
-            }
-            i++;
-            cbType.addItem(new JComboBoxItem<WordType>(type) {
-                @Override
-                public String toString() {
-                    return this.getData().getName();
+        if (init) {
+            txWord.setText(word.getWord());
+            int cbIndex = 0, i = 0;
+            for (WordType type : WordType.values()) {
+                if (word.getType().equals(type)) {
+                    cbIndex = i;
                 }
-            });
-        }
-        cbType.setSelectedIndex(cbIndex);
+                i++;
+                cbType.addItem(new JComboBoxItem<WordType>(type) {
+                    @Override
+                    public String toString() {
+                        return this.getData().getName();
+                    }
+                });
+            }
+            cbType.setSelectedIndex(cbIndex);
+        } else {
+            init = true;
+            lbWord = new JLabel("自定义关键词", JLabel.CENTER);
+            lbType = new JLabel("粉丝类型", JLabel.CENTER);
 
-        contentPanel.add(lbWord);
-        contentPanel.add(txWord);
-        contentPanel.add(lbType);
-        contentPanel.add(cbType);
+            txWord = new JTextField(word.getWord());
+            // 商品种类下拉框
+            cbType = new JComboBox();
+            int cbIndex = 0, i = 0;
+            for (WordType type : WordType.values()) {
+                if (word.getType().equals(type)) {
+                    cbIndex = i;
+                }
+                i++;
+                cbType.addItem(new JComboBoxItem<WordType>(type) {
+                    @Override
+                    public String toString() {
+                        return this.getData().getName();
+                    }
+                });
+            }
+            cbType.setSelectedIndex(cbIndex);
+
+            contentPanel.add(lbWord);
+            contentPanel.add(txWord);
+            contentPanel.add(lbType);
+            contentPanel.add(cbType);
+        }
     }
 
     // 初始化按钮面板
@@ -107,19 +129,20 @@ public class ModifyWordJFrame extends JFrame implements MouseListener {
         btnModify.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         btnModify.setForeground(Color.white);
         btnModify.setFont(MyFont.Static);
-        btnModify.addMouseListener(this);
+        btnModify.setActionCommand("save");
+        btnModify.addActionListener(this);
 
         buttonPanel.add(btnModify);
     }
 
     // 鼠标点击事件
     @Override
-    public void mouseClicked(MouseEvent e) {
-        if (e.getSource() == btnModify) {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("save")) {
 
             String txValue = txWord.getText().trim();
             if (txValue.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "请输入关键词");
+                JOptionPane.showMessageDialog(null, "请输入自定义关键词");
             } else {
                 WordType type = ((JComboBoxItem<WordType>) cbType.getSelectedItem()).getData();
                 word.setType(type);
@@ -132,29 +155,4 @@ public class ModifyWordJFrame extends JFrame implements MouseListener {
         }
 
     }
-
-    @Override
-    public void mouseEntered(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
