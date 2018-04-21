@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * 用户管理功能面板
  */
-public class ActionJPanel extends JPanel implements ActionListener {
+public class AutoActionJPanel extends JPanel implements ActionListener {
 
     // 定义全局组件
     private JPanel contentPanel, labelPanel, textPanel, buttonPanel, tablePanel, pagePanel;
@@ -52,7 +52,7 @@ public class ActionJPanel extends JPanel implements ActionListener {
     private ChromeBrowserService chromeBrowserService;
     private TaskService taskService;
 
-    public ActionJPanel(Member member, MainWindow mainWindow) {
+    public AutoActionJPanel(Member member, MainWindow mainWindow) {
 
         super();
         setLayout(new BorderLayout());
@@ -316,9 +316,9 @@ public class ActionJPanel extends JPanel implements ActionListener {
                 CommentAction action = SpringContentUtil.getBean(CommentAction.class);
                 WebDriver driver = getDriver();
                 action.init(driver, this.member, datePicker.getDate());
-                action.run(() -> ActionJPanel.this.refreshTable(0));
+                action.run(() -> AutoActionJPanel.this.refreshTable(0));
 
-            });
+            }, 60 * 60);
         } else if (e.getActionCommand().equals("closeComment")) {
             taskService.submit(() -> {
                 CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);

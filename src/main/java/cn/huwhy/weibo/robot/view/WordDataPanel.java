@@ -78,17 +78,17 @@ public class WordDataPanel extends JPanel implements ActionListener {
 
         toolPanel = new JPanel();
         // 工具图标
-        tool_add = new JButton("添加关键词");
+        tool_add = new JButton("添加敏感词");
         tool_add.setToolTipText("添加");
         tool_add.setActionCommand("addWord");
         tool_add.addActionListener(this);
 
-        tool_modify = new JButton("修改关键词");
+        tool_modify = new JButton("修改敏感词");
         tool_modify.setToolTipText("修改");
         tool_modify.setActionCommand("chgWord");
         tool_modify.addActionListener(this);
 
-        tool_delete = new JButton("删除关键词");
+        tool_delete = new JButton("删除敏感词");
         tool_delete.setToolTipText("删除");
         tool_delete.setActionCommand("delWord");
         tool_delete.addActionListener(this);
@@ -127,7 +127,7 @@ public class WordDataPanel extends JPanel implements ActionListener {
 
     // 初始化数据表格面板
     public void initTablePanel() {
-        String params[] = {"ID", "关键词", "类型", "出现次数"};
+        String params[] = {"ID", "敏感词", "类型", "出现次数"};
         List<List<String>> data = loadData(1, WordType.BLACK);
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);
@@ -182,7 +182,7 @@ public class WordDataPanel extends JPanel implements ActionListener {
     // 更新数据表格
     protected void refreshTablePanel(long page, WordType type) {
         remove(tablePanel);
-        String params[] = {"ID", "关键词", "类型", "出现次数"};
+        String params[] = {"ID", "敏感词", "类型", "出现次数"};
         List<List<String>> data = loadData(page, type);
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);
@@ -202,7 +202,7 @@ public class WordDataPanel extends JPanel implements ActionListener {
     // 更新数据表格
     protected void refreshTablePanel() {
         remove(tablePanel);
-        String params[] = {"ID", "关键词", "类型", "出现次数"};
+        String params[] = {"ID", "敏感词", "类型", "出现次数"};
         List<List<String>> data = loadData(term.getPage(), term.getType());
         baseTableModule = new BaseTableModule(params, data);
         table = new JTable(baseTableModule);

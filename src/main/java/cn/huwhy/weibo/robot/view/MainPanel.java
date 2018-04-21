@@ -47,9 +47,10 @@ public class MainPanel extends JTabbedPane implements ActionListener {
         if (!addTabs) {
             remove(memberManagerJPanel);
             addTabs = true;
-            addTab("任务中心", new ActionJPanel(member, mainWindow));
             addTab("自定义敏感词", new WordDataPanel(member));
+            addTab("任务中心", new ActionJPanel(member, mainWindow));
             addTab("粉丝管理", new FansGroupDataPanel(member.getId()));
+            addTab("自动侦察兵", new AutoActionJPanel(member, mainWindow));
         }
     }
 

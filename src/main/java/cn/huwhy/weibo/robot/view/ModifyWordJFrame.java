@@ -41,7 +41,7 @@ public class ModifyWordJFrame extends JFrame implements ActionListener {
         this.word = wordService.get(id);
         initBackgroundPanel();
         this.add(backgroundPanel);
-        this.setTitle("修改自定义关键词");
+        this.setTitle("修改自定义敏感词");
         this.setSize(640, 360);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
@@ -66,7 +66,7 @@ public class ModifyWordJFrame extends JFrame implements ActionListener {
 
         labelPanel = new JPanel();
 
-        JLabel title = new JLabel("自定义关键词信息");
+        JLabel title = new JLabel("自定义敏感词信息");
         title.setFont(MyFont.Static);
 
         labelPanel.add(title);
@@ -93,7 +93,7 @@ public class ModifyWordJFrame extends JFrame implements ActionListener {
             cbType.setSelectedIndex(cbIndex);
         } else {
             init = true;
-            lbWord = new JLabel("自定义关键词", JLabel.CENTER);
+            lbWord = new JLabel("自定义敏感词", JLabel.CENTER);
             lbType = new JLabel("粉丝类型", JLabel.CENTER);
 
             txWord = new JTextField(word.getWord());
@@ -142,7 +142,7 @@ public class ModifyWordJFrame extends JFrame implements ActionListener {
 
             String txValue = txWord.getText().trim();
             if (txValue.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "请输入自定义关键词");
+                JOptionPane.showMessageDialog(null, "请输入自定义敏感词");
             } else {
                 WordType type = ((JComboBoxItem<WordType>) cbType.getSelectedItem()).getData();
                 word.setType(type);

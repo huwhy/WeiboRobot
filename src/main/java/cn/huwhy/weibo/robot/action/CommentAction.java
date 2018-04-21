@@ -4,13 +4,17 @@ import cn.huwhy.common.util.CollectionUtil;
 import cn.huwhy.common.util.ThreadUtil;
 import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.model.MyFans;
+import cn.huwhy.weibo.robot.model.Task;
+import cn.huwhy.weibo.robot.model.TaskStatus;
 import cn.huwhy.weibo.robot.model.Word;
 import cn.huwhy.weibo.robot.model.WordType;
 import cn.huwhy.weibo.robot.service.FansService;
 import cn.huwhy.weibo.robot.service.MemberService;
+import cn.huwhy.weibo.robot.service.TaskService;
 import cn.huwhy.weibo.robot.service.WordService;
 import org.apache.commons.lang.time.DateUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -48,6 +52,10 @@ public class CommentAction {
     private WordService wordService;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private TaskService taskService;
+
+    private String summaryFormat = "处理%s条评论，发现删除%s条黑评论";
 
     public CommentAction() {
     }
@@ -58,21 +66,36 @@ public class CommentAction {
         this.minDate = minDate;
     }
 
-    public void run() {
+    public void run(ActionCaller caller) {
         if (running) {
             return;
         }
         running = true;
-        init();
-        int page = 1;
+        Task task = new Task();
         try {
+            task.setMemberId(member.getId());
+            task.setName("自动处理评论任务");
+            task.setStartTime(new Date());
+            task.setStatus(TaskStatus.ING);
+            task.setSummary(String.format(summaryFormat, 0, 0));
+            taskService.save(task);
+            init();
+            int page = 1;
             this.driver.get(uri);
             ThreadUtil.sleep(1000);
             List<WebElement> elements;
+            int total = 0, delNum = 0;
             do {
                 elements = getWebElements();
                 if (CollectionUtil.isNotEmpty(elements)) {
-                    collectData(elements);
+                    total += elements.size();
+                    task.setSummary(String.format(summaryFormat, total, delNum));
+                    taskService.save(task);
+                    caller.call();
+                    delNum = collectData(elements) + delNum;
+                    task.setSummary(String.format(summaryFormat, elements.size(), delNum));
+                    taskService.save(task);
+                    caller.call();
                     WebElement next = this.driver.findElement(By.cssSelector(".W_pages .next"));
                     if (!next.getAttribute("class").contains("page_dis")) {
                         next.click();
@@ -86,13 +109,20 @@ public class CommentAction {
             } while (true);
             this.member.setLastCommentId(this.curMaxCommentId);
             this.memberService.save(this.member);
+        } catch (Exception e) {
+            logger.warn("", e);
         } finally {
+            task.setStatus(TaskStatus.FINISHED);
+            task.setEndTime(new Date());
+            taskService.save(task);
+            caller.call();
             running = false;
         }
     }
 
-    private void collectData(List<WebElement> elements) {
+    private int collectData(List<WebElement> elements) {
         Map<Long, MyFans> fansMap = new HashMap<>();
+        int delNum = 0;
         for (WebElement element : elements) {
             try {
                 long commentId = Long.parseLong(element.getAttribute("comment_id"));
@@ -107,7 +137,7 @@ public class CommentAction {
                 String text = element.findElement(By.cssSelector(".WB_detail .WB_text")).getText();
                 String timeStr = element.findElement(By.cssSelector(".WB_detail .WB_from")).getText();
                 Matcher matcher = timePattern.matcher(timeStr);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     Date date = DateUtils.parseDate(matcher.group(), new String[]{"MM月dd日 HH:mm", "yyyy年MM月dd日 HH:mm", "M月dd日 HH:mm"});
                     if (date.before(minDate)) {
                         break;
@@ -136,6 +166,7 @@ public class CommentAction {
                         if (word.getType() == WordType.BLACK) {
                             fans.setBadNum(fans.getBadNum() + 1);
                             deleteComment(element, this.member.getConfig().getBadNumLimit() <= fans.getBadNum());
+                            delNum += 1;
                             break;
                         } else if (word.getType() == WordType.IRON) {
                             fans.setGoodNum(fans.getGoodNum() + 1);
@@ -153,6 +184,7 @@ public class CommentAction {
                 wordService.saves(hitWords);
             }
         }
+        return delNum;
     }
 
     private List<WebElement> getWebElements() {

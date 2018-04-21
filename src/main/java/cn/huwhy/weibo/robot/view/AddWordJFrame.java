@@ -54,11 +54,13 @@ public class AddWordJFrame extends JFrame implements ActionListener {
             this.parentPanel = parentPanel;
             initBackgroundPanel();
             this.add(backgroundPanel);
-            this.setTitle("添加自定义关键词");
+            this.setTitle("添加自定义敏感词");
             this.setSize(640, 360);
             this.setVisible(true);
             this.setLocationRelativeTo(null);
             this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        } else {
+            this.setVisible(true);
         }
     }
 
@@ -80,7 +82,7 @@ public class AddWordJFrame extends JFrame implements ActionListener {
 
         labelPanel = new JPanel();
 
-        JLabel title = new JLabel("添加自定义关键词");
+        JLabel title = new JLabel("添加自定义敏感词");
         title.setFont(MyFont.Static);
 
         labelPanel.add(title);
@@ -90,8 +92,8 @@ public class AddWordJFrame extends JFrame implements ActionListener {
     public void initContentPanel() {
         contentPanel = new JPanel(new GridLayout(6, 2));
 
-        lbWord = new JLabel("自定义关键词", JLabel.CENTER);
-        lbType = new JLabel("关键词类型", JLabel.CENTER);
+        lbWord = new JLabel("自定义敏感词", JLabel.CENTER);
+        lbType = new JLabel("敏感词类型", JLabel.CENTER);
 
         txWord = new JTextField("");
 
@@ -130,7 +132,7 @@ public class AddWordJFrame extends JFrame implements ActionListener {
         if (e.getActionCommand().equals("save")) {
             String word = txWord.getText().trim();
             if (word.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "请输入自定义关键词");
+                JOptionPane.showMessageDialog(null, "请输入自定义敏感词");
             } else {
                 WordType type = ((JComboBoxItem<WordType>) cbType.getSelectedItem()).getData();
                 Word word1 = new Word();
@@ -138,7 +140,7 @@ public class AddWordJFrame extends JFrame implements ActionListener {
                 word1.setType(type);
                 word1.setMemberId(this.member.getId());
                 wordService.save(word1);
-                JOptionPane.showMessageDialog(null, "添加自定义关键词成功");
+                JOptionPane.showMessageDialog(null, "添加自定义敏感词成功");
                 this.setVisible(false);
                 parentPanel.refreshTablePanel(1, null);
             }

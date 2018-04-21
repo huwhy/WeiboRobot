@@ -204,7 +204,7 @@ public class MemberManagerJPanel extends JPanel implements ActionListener {
                 this.lbCode.setVisible(false);
                 this.txCode.setVisible(false);
                 mainWindow.addTabs();
-                this.chromeBrowserService.login(this.member);
+//                this.chromeBrowserService.login(this.member);
             } else {
                 JOptionPane.showMessageDialog(null, "请输入正确的验证码");
             }

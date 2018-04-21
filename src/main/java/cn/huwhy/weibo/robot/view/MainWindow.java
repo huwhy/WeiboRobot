@@ -23,7 +23,7 @@ public class MainWindow extends JFrame {
             e.printStackTrace();
         }
 
-        this.setTitle(" 神盾微博舆情监测系统 私人定制V1.0");
+        this.setTitle(" 战狼微博舆情监测系统 私人定制V1.0");
         this.setSize(1152, 720);
 
 
