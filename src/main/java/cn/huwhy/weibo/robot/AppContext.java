@@ -1,4 +1,4 @@
-package cn.huwhy.weibo.robot.view;
+package cn.huwhy.weibo.robot;
 
 import cn.huwhy.weibo.robot.controller.BaseController;
 import cn.huwhy.weibo.robot.model.Member;

@@ -7,7 +7,7 @@ import cn.huwhy.weibo.robot.model.WordTerm;
 import cn.huwhy.weibo.robot.model.WordType;
 import cn.huwhy.weibo.robot.service.WordService;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
-import cn.huwhy.weibo.robot.view.AppContext;
+import cn.huwhy.weibo.robot.AppContext;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

@@ -1,6 +1,5 @@
-package cn.huwhy.weibo.robot.view;
+package cn.huwhy.weibo.robot;
 
-import cn.huwhy.weibo.robot.AppConfig;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

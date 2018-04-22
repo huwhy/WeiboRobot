@@ -3,7 +3,7 @@ package cn.huwhy.weibo.robot.controller;
 import cn.huwhy.common.util.RandomUtil;
 import cn.huwhy.common.util.StringUtil;
 import cn.huwhy.weibo.robot.model.Member;
-import cn.huwhy.weibo.robot.view.AppContext;
+import cn.huwhy.weibo.robot.AppContext;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -76,13 +76,15 @@ public class MainController extends BaseController implements Initializable {
             Parent parent = AppContext.loadFxml("fans/list.fxml");
             tabFans.setContent(parent);
         } else if (e.getTarget() == tabTask) {
-            AppContext.setAutoTask(false);
             Parent parent = AppContext.loadFxml("task/index.fxml");
             tabTask.setContent(parent);
         } else if (e.getTarget()== tabAutoTask) {
-            AppContext.setAutoTask(true);
             Parent parent = AppContext.loadFxml("task/index2.fxml");
             tabAutoTask.setContent(parent);
+        } else if (e.getTarget()== tabData) {
+            AppContext.setAutoTask(true);
+            Parent parent = AppContext.loadFxml("data/index.fxml");
+            tabData.setContent(parent);
         }
     }
 

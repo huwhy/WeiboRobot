@@ -12,7 +12,7 @@ import cn.huwhy.weibo.robot.service.ChromeBrowserService;
 import cn.huwhy.weibo.robot.service.MemberService;
 import cn.huwhy.weibo.robot.service.TaskService;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
-import cn.huwhy.weibo.robot.view.AppContext;
+import cn.huwhy.weibo.robot.AppContext;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;

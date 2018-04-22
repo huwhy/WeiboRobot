@@ -3,7 +3,7 @@ package cn.huwhy.weibo.robot.controller;
 import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.service.MemberService;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
-import cn.huwhy.weibo.robot.view.AppContext;
+import cn.huwhy.weibo.robot.AppContext;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
