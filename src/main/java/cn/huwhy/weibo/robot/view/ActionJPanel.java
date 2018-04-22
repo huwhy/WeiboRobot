@@ -2,8 +2,8 @@ package cn.huwhy.weibo.robot.view;
 
 import cn.huwhy.common.util.ThreadUtil;
 import cn.huwhy.interfaces.Paging;
+import cn.huwhy.weibo.robot.action.ActionUtil;
 import cn.huwhy.weibo.robot.action.CommentAction;
-import cn.huwhy.weibo.robot.action.CommentSettingAction;
 import cn.huwhy.weibo.robot.model.BaseTableModule;
 import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.model.Task;
@@ -14,12 +14,15 @@ import cn.huwhy.weibo.robot.service.TaskService;
 import cn.huwhy.weibo.robot.util.MyFont;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
 import cn.huwhy.weibo.robot.util.Tools;
+import javafx.scene.web.WebEngine;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import org.jb2011.lnf.beautyeye.widget.border.BEShadowBorder;
 import org.jdesktop.swingx.JXDatePicker;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +42,7 @@ public class ActionJPanel extends JPanel implements ActionListener {
     private JTextField txBadNum = new JTextField(10);
     private JXDatePicker datePicker;
     private JCheckBox ckOpenBlack;
-    private JButton btnWbLogin, btnDelComment, btnCloseComment;
+    private JButton btnTest, btnDelComment;
     private TaskTerm term = new TaskTerm();
     private BaseTableModule tableData;
     private JTable table;
@@ -81,7 +84,7 @@ public class ActionJPanel extends JPanel implements ActionListener {
         buttonPanel.setOpaque(false);
 
         JLabel label = new JLabel();
-        label.setText("<html><h2 style='text-align:center;'>粉丝标签自定义设置</h2></html>");
+        label.setText("<html><h2 style='text-align:center;'>舆情监测自定义设置</h2></html>");
         label.setFont(MyFont.Static);
 
         JLabel label_username = new JLabel("用户名:", JLabel.CENTER);
@@ -111,14 +114,14 @@ public class ActionJPanel extends JPanel implements ActionListener {
 
 
         txBadNum.setFont(MyFont.Static);
-        txBadNum.setEditable(false);
+        txBadNum.setEditable(true);
 
-        btnWbLogin = new JButton("登录微博");
-        btnWbLogin.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
-        btnWbLogin.setForeground(Color.BLACK);
-        btnWbLogin.setFont(MyFont.Static);
-        btnWbLogin.setActionCommand("loginWb");
-        btnWbLogin.addActionListener(this);
+        btnTest = new JButton("测试私信");
+        btnTest.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
+        btnTest.setForeground(Color.BLACK);
+        btnTest.setFont(MyFont.Static);
+        btnTest.setActionCommand("loginWb");
+        btnTest.addActionListener(this);
 
         btnDelComment = new JButton("执行删除评论任务");
         btnDelComment.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
@@ -126,13 +129,6 @@ public class ActionJPanel extends JPanel implements ActionListener {
         btnDelComment.setFont(MyFont.Static);
         btnDelComment.setActionCommand("delComment");
         btnDelComment.addActionListener(this);
-
-        btnCloseComment = new JButton("执行关闭粉丝评论");
-        btnCloseComment.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
-        btnCloseComment.setForeground(Color.BLACK);
-        btnCloseComment.setFont(MyFont.Static);
-        btnCloseComment.setActionCommand("closeComment");
-        btnCloseComment.addActionListener(this);
 
         JButton btnRefresh = new JButton("刷新表格");
         btnRefresh.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
@@ -162,8 +158,8 @@ public class ActionJPanel extends JPanel implements ActionListener {
         textPanel.add(lbRemark);
 
         buttonPanel.add(btnDelComment);
-        buttonPanel.add(btnCloseComment);
         buttonPanel.add(btnRefresh);
+        buttonPanel.add(btnTest);
 
         contentPanel.add(labelPanel, BorderLayout.NORTH);
         contentPanel.add(textPanel, BorderLayout.CENTER);
@@ -267,7 +263,7 @@ public class ActionJPanel extends JPanel implements ActionListener {
     public void modifyUserContentPanel() {
         txBadNum.setEditable(true);
 
-        btnWbLogin.setVisible(false);
+        btnTest.setVisible(false);
         btnDelComment.setVisible(false);
 
     }
@@ -275,7 +271,7 @@ public class ActionJPanel extends JPanel implements ActionListener {
     public void finishModifyUserContentPanel() {
         txBadNum.setEditable(false);
 
-        btnWbLogin.setVisible(true);
+        btnTest.setVisible(true);
         btnDelComment.setVisible(true);
     }
 
@@ -310,23 +306,48 @@ public class ActionJPanel extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(null, "用户信息修改成功");
             finishModifyUserContentPanel();
         } else if (e.getActionCommand().equals("loginWb")) {
-            this.chromeBrowserService.login(this.member);
+            WebDriver driver = getDriver();
+            driver.get("https://weibo.com/u/6377564397");
+            List<WebElement> list = driver.findElements(By.cssSelector(".btn_bed a[action-type]"));
+            for (WebElement el : list) {
+                if (el.getText().equals("私信")) {
+                    el.click();
+                    while (true) {
+                        try {
+                            ThreadUtil.sleepSeconds(1);
+                            driver.findElement(By.cssSelector("li[node-type=contact_item_6377564397]"));
+                            break;
+                        } catch (Throwable err) {
+                            err.printStackTrace();
+                        }
+                    }
+                    while (true){
+                        try {
+                            ThreadUtil.sleepSeconds(1);
+                            driver.findElement(By.cssSelector(".sendbox_area .W_input")).sendKeys("hello");
+                            driver.findElement(By.cssSelector(".sendbox_area .W_input")).sendKeys("\r\n");
+                            break;
+                        } catch (Throwable err) {
+                            err.printStackTrace();
+                        }
+                    }
+                    break;
+                }
+            }
         } else if (e.getActionCommand().equals("delComment")) {
-            taskService.submit(() -> {
-                CommentAction action = SpringContentUtil.getBean(CommentAction.class);
-                WebDriver driver = getDriver();
-                action.init(driver, this.member, datePicker.getDate());
-                action.run(() -> ActionJPanel.this.refreshTable(0));
-
-            });
-        } else if (e.getActionCommand().equals("closeComment")) {
-            taskService.submit(() -> {
-                CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);
-                WebDriver driver = getDriver();
-                action.setDriver(driver);
-                action.setMemberConfig(this.member.getConfig());
-                action.run();
-            });
+            CommentAction action = SpringContentUtil.getBean(CommentAction.class);
+            WebDriver driver = getDriver();
+            member.getConfig().setOpenBlack(ckOpenBlack.isSelected());
+            action.init(driver, this.member, datePicker.getDate());
+            action.run(() -> ActionJPanel.this.refreshTable(0));
+//        } else if (e.getActionCommand().equals("closeComment")) {
+//            taskService.submit(() -> {
+//                CommentSettingAction action = SpringContentUtil.getBean(CommentSettingAction.class);
+//                WebDriver driver = getDriver();
+//                action.setDriver(driver);
+//                action.setMemberConfig(this.member.getConfig());
+//                action.run();
+//            });
         } else if (e.getActionCommand().equalsIgnoreCase("refreshTable")) {
             this.refreshTable(0);
         } else if ("page".equals(e.getActionCommand())) {
@@ -337,16 +358,21 @@ public class ActionJPanel extends JPanel implements ActionListener {
 
     private WebDriver getDriver() {
         WebDriver driver = this.chromeBrowserService.getDriver();
-        if (driver == null) {
-            this.chromeBrowserService.login(member);
-            ThreadUtil.sleepSeconds(1);
-            while (true) {
-                driver = this.chromeBrowserService.getDriver();
-                if (!driver.getCurrentUrl().startsWith("https://weibo.com/u/")) {
-                    ThreadUtil.sleepSeconds(1);
-                } else {
-                    break;
-                }
+//        if (driver != null) {
+//            try {
+//                driver.findElement(By.cssSelector(".gn_set"));
+//                return driver;
+//            } catch (Exception e) {
+//            }
+//        }
+        this.chromeBrowserService.login(member);
+        ThreadUtil.sleepSeconds(1);
+        while (true) {
+            driver = this.chromeBrowserService.getDriver();
+            if (!driver.getCurrentUrl().startsWith("https://weibo.com/u/")) {
+                ThreadUtil.sleepSeconds(1);
+            } else {
+                break;
             }
         }
         return driver;

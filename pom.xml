@@ -183,7 +183,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <mainClass>cn.huwhy.weibo.robot.App</mainClass>
+          <mainClass>cn.huwhy.weibo.robot.view.AppWindow</mainClass>
         </configuration>
         <executions>
           <execution>

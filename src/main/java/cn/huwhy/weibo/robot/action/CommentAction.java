@@ -45,6 +45,7 @@ public class CommentAction {
     private long curMaxCommentId;
     private List<Word> words;
     private Set<Word> hitWords = new HashSet<>();
+    private Map<Long, MyFans> fansMap = new HashMap<>();
 
     @Autowired
     private FansService fansService;
@@ -121,7 +122,6 @@ public class CommentAction {
     }
 
     private int collectData(List<WebElement> elements) {
-        Map<Long, MyFans> fansMap = new HashMap<>();
         int delNum = 0;
         for (WebElement element : elements) {
             try {
@@ -151,26 +151,30 @@ public class CommentAction {
                 if (fans == null) {
                     fans = new MyFans();
                     fans.setId(myFansId);
+                    fans.setType(WordType.MASS);
                     fansMap.put(myFansId, fans);
                 }
                 fans.setNick(nick);
                 fans.setHome(href);
                 fans.setHeadImg(img);
                 fans.setMemberId(this.member.getId());
-                fans.setType(WordType.MASS);
-                for (Word word : words) {
-                    if (text.contains(word.getWord())) {
-                        word.setHitNum(word.getHitNum() + 1);
-                        this.hitWords.add(word);
-                        fans.setType(word.getType());
-                        if (word.getType() == WordType.BLACK) {
-                            fans.setBadNum(fans.getBadNum() + 1);
-                            deleteComment(element, this.member.getConfig().getBadNumLimit() <= fans.getBadNum());
-                            delNum += 1;
-                            break;
-                        } else if (word.getType() == WordType.IRON) {
-                            fans.setGoodNum(fans.getGoodNum() + 1);
-                            break;
+                if (fans.getType().equals(WordType.BLACK)) {
+                    deleteComment(element, this.member.getConfig().isOpenBlack());
+                } else {
+                    for (Word word : words) {
+                        if (text.contains(word.getWord())) {
+                            word.setHitNum(word.getHitNum() + 1);
+                            this.hitWords.add(word);
+                            fans.setType(word.getType());
+                            if (word.getType() == WordType.BLACK) {
+                                fans.setBadNum(fans.getBadNum() + 1);
+                                deleteComment(element, member.getConfig().isOpenBlack() && member.getConfig().getBadNumLimit() <= fans.getBadNum());
+                                delNum += 1;
+                                break;
+                            } else if (word.getType() == WordType.IRON) {
+                                fans.setGoodNum(fans.getGoodNum() + 1);
+                                break;
+                            }
                         }
                     }
                 }
@@ -225,7 +229,9 @@ public class CommentAction {
     private void init() {
         logger.info("comment action init start");
         this.words = wordService.listMyWords(this.member.getId());
-        this.lastCommentId = this.member.getLastCommentId();
+        this.lastCommentId = this.memberService.get(this.member.getId()).getLastCommentId();
+        this.curMaxCommentId = 0;
+        this.fansMap.clear();
     }
 
 }

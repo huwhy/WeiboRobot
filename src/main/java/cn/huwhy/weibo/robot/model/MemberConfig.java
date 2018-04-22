@@ -11,6 +11,7 @@ public class MemberConfig implements Serializable {
      * 黑评数多少加入黑名单
      */
     private int badNumLimit;
+    private boolean openBlack;
 
     public int getMemberId() {
         return memberId;
@@ -34,5 +35,13 @@ public class MemberConfig implements Serializable {
 
     public void setBadNumLimit(int badNumLimit) {
         this.badNumLimit = badNumLimit;
+    }
+
+    public boolean isOpenBlack() {
+        return openBlack;
+    }
+
+    public void setOpenBlack(boolean openBlack) {
+        this.openBlack = openBlack;
     }
 }

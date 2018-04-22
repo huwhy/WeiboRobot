@@ -5,8 +5,7 @@ import cn.huwhy.interfaces.EnumValue;
 public enum WordType implements EnumValue<Integer> {
     BLACK("黑粉", 0),
     IRON("铁粉", 1),
-    MASS("群众", 2),
-    PASSERBY("过客", 3);
+    MASS("吃瓜群众", 2);
 
     WordType(String name, Integer value) {
        this.name = name;
@@ -22,6 +21,11 @@ public enum WordType implements EnumValue<Integer> {
     }
 
     public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
         return name;
     }
 }

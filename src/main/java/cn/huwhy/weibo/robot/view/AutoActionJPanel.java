@@ -19,6 +19,7 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import org.jb2011.lnf.beautyeye.widget.border.BEShadowBorder;
 import org.jdesktop.swingx.JXDatePicker;
+import org.joda.time.LocalDate;
 import org.openqa.selenium.WebDriver;
 
 import javax.swing.*;
@@ -37,9 +38,8 @@ public class AutoActionJPanel extends JPanel implements ActionListener {
     // 定义全局组件
     private JPanel contentPanel, labelPanel, textPanel, buttonPanel, tablePanel, pagePanel;
     private JTextField txBadNum = new JTextField(10);
-    private JXDatePicker datePicker;
     private JCheckBox ckOpenBlack;
-    private JButton btnWbLogin, btnDelComment, btnCloseComment;
+    private JButton btnDelComment;
     private TaskTerm term = new TaskTerm();
     private BaseTableModule tableData;
     private JTable table;
@@ -70,8 +70,6 @@ public class AutoActionJPanel extends JPanel implements ActionListener {
         contentPanel = new JPanel();
         contentPanel.setLayout(new BorderLayout(0, 30));
         contentPanel.setOpaque(false);
-//        contentPanel.setPreferredSize(new Dimension(600, 420));//关键代码,设置JPanel的大小
-//        contentPanel.setSize(600, 420);
         contentPanel.setBorder(new BEShadowBorder());
         labelPanel = new JPanel();
         labelPanel.setOpaque(false);
@@ -81,7 +79,7 @@ public class AutoActionJPanel extends JPanel implements ActionListener {
         buttonPanel.setOpaque(false);
 
         JLabel label = new JLabel();
-        label.setText("<html><h2 style='text-align:center;'>粉丝标签自定义设置</h2></html>");
+        label.setText("<html><h2 style='text-align:center;'>侦察兵设置</h2></html>");
         label.setFont(MyFont.Static);
 
         JLabel label_username = new JLabel("用户名:", JLabel.CENTER);
@@ -92,15 +90,10 @@ public class AutoActionJPanel extends JPanel implements ActionListener {
         lbWName.setFont(MyFont.Static);
         JLabel lbWPwd = new JLabel("微博密码:", JLabel.CENTER);
         lbWPwd.setFont(MyFont.Static);
-        JLabel label_identify = new JLabel("选择日期:", JLabel.CENTER);
-        label_identify.setFont(MyFont.Static);
         JLabel lbBadNum = new JLabel("自定义黑粉设置", JLabel.CENTER);
         lbBadNum.setFont(MyFont.Static);
 
         if (member != null) {
-            datePicker = new JXDatePicker();
-            datePicker.setFormats("yyyy-MM-dd HH:mm");
-            datePicker.setDate(new Date());
             if (member.getConfig() != null) {
                 txBadNum.setText(member.getConfig().getBadNumLimit() + "");
             }
@@ -111,43 +104,16 @@ public class AutoActionJPanel extends JPanel implements ActionListener {
 
 
         txBadNum.setFont(MyFont.Static);
-        txBadNum.setEditable(false);
+        txBadNum.setEditable(true);
 
-        btnWbLogin = new JButton("登录微博");
-        btnWbLogin.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
-        btnWbLogin.setForeground(Color.BLACK);
-        btnWbLogin.setFont(MyFont.Static);
-        btnWbLogin.setActionCommand("loginWb");
-        btnWbLogin.addActionListener(this);
-
-        btnDelComment = new JButton("执行删除评论任务");
+        btnDelComment = new JButton("开启侦察兵");
         btnDelComment.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
         btnDelComment.setForeground(Color.BLACK);
         btnDelComment.setFont(MyFont.Static);
         btnDelComment.setActionCommand("delComment");
         btnDelComment.addActionListener(this);
 
-        btnCloseComment = new JButton("执行关闭粉丝评论");
-        btnCloseComment.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
-        btnCloseComment.setForeground(Color.BLACK);
-        btnCloseComment.setFont(MyFont.Static);
-        btnCloseComment.setActionCommand("closeComment");
-        btnCloseComment.addActionListener(this);
-
-        JButton btnRefresh = new JButton("刷新表格");
-        btnRefresh.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
-        btnRefresh.setForeground(Color.BLACK);
-        btnRefresh.setFont(MyFont.Static);
-        btnRefresh.setActionCommand("refreshTable");
-        btnRefresh.addActionListener(this);
-
         labelPanel.add(label);
-
-        textPanel.add(label_identify);
-        datePicker.setFont(MyFont.Static);
-        datePicker.setSize(200, 24);
-        datePicker.setPreferredSize(new Dimension(200, 24));
-        textPanel.add(datePicker);
         textPanel.add(lbBadNum);
         txBadNum.setFont(MyFont.Static);
         textPanel.add(txBadNum);
@@ -162,8 +128,9 @@ public class AutoActionJPanel extends JPanel implements ActionListener {
         textPanel.add(lbRemark);
 
         buttonPanel.add(btnDelComment);
-        buttonPanel.add(btnCloseComment);
-        buttonPanel.add(btnRefresh);
+        JLabel tip = new JLabel("每一小时执行一次");
+        tip.setFont(MyFont.Static);
+        buttonPanel.add(tip);
 
         contentPanel.add(labelPanel, BorderLayout.NORTH);
         contentPanel.add(textPanel, BorderLayout.CENTER);
@@ -266,16 +233,11 @@ public class AutoActionJPanel extends JPanel implements ActionListener {
 
     public void modifyUserContentPanel() {
         txBadNum.setEditable(true);
-
-        btnWbLogin.setVisible(false);
         btnDelComment.setVisible(false);
-
     }
 
     public void finishModifyUserContentPanel() {
         txBadNum.setEditable(false);
-
-        btnWbLogin.setVisible(true);
         btnDelComment.setVisible(true);
     }
 
@@ -315,7 +277,7 @@ public class AutoActionJPanel extends JPanel implements ActionListener {
             taskService.submit(() -> {
                 CommentAction action = SpringContentUtil.getBean(CommentAction.class);
                 WebDriver driver = getDriver();
-                action.init(driver, this.member, datePicker.getDate());
+                action.init(driver, this.member, LocalDate.now().toDate());
                 action.run(() -> AutoActionJPanel.this.refreshTable(0));
 
             }, 60 * 60);

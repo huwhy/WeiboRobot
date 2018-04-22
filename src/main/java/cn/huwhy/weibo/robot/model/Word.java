@@ -9,6 +9,16 @@ public class Word implements Serializable {
     private WordType type;
     private int hitNum;
 
+    public Word() {
+    }
+
+    public Word(long id, String word, WordType type, int hitNum) {
+        this.id = id;
+        this.word = word;
+        this.type = type;
+        this.hitNum = hitNum;
+    }
+
     public long getId() {
         return id;
     }
