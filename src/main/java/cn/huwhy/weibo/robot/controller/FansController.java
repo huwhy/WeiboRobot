@@ -1,12 +1,14 @@
 package cn.huwhy.weibo.robot.controller;
 
+import cn.huwhy.common.util.StringUtil;
 import cn.huwhy.interfaces.Paging;
+import cn.huwhy.weibo.robot.AppContext;
 import cn.huwhy.weibo.robot.model.MyFans;
 import cn.huwhy.weibo.robot.model.MyFansTerm;
 import cn.huwhy.weibo.robot.model.WordType;
 import cn.huwhy.weibo.robot.service.FansService;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
-import cn.huwhy.weibo.robot.AppContext;
+import com.sun.javafx.scene.control.skin.LabeledText;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,7 +21,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -60,12 +75,43 @@ public class FansController extends BaseController implements Initializable {
                 }
             });
             TableColumn<MyFans, String> colHome = new TableColumn<>("主页");
+            colHome.setCellFactory(param -> {
+                TextFieldTableCell<MyFans, String> cell = new TextFieldTableCell<>();
+                cell.setOnMouseClicked((MouseEvent t) -> {
+                    if (t.getClickCount() == 2) {
+                        try {
+                            URI uri = new URI(((LabeledText) t.getTarget()).getText());
+                            Desktop.getDesktop().browse(uri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                return cell;
+            });
             colHome.setCellValueFactory(new PropertyValueFactory<>("home"));
             TableColumn<MyFans, String> colHeadImg = new TableColumn<>("头像");
+            colHeadImg.setCellFactory(param -> {
+                TextFieldTableCell<MyFans, String> cell = new TextFieldTableCell<MyFans, String>() {
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem("", empty);
+                        if (StringUtil.isNotEmpty(item)) {
+                            BackgroundImage backgroundImage = new BackgroundImage(new Image(item),
+                                    BackgroundRepeat.NO_REPEAT,
+                                    BackgroundRepeat.NO_REPEAT,
+                                    BackgroundPosition.CENTER,
+                                    BackgroundSize.DEFAULT);
+                            this.setBackground(new Background(backgroundImage));
+                        }
+                    }
+                };
+                cell.setMinHeight(50);
+                cell.setPrefHeight(50);
+                return cell;
+            });
             colHeadImg.setCellValueFactory(new PropertyValueFactory<>("headImg"));
 
-            tableView.getColumns().addAll(colId, colNick, colType, colHome, colHeadImg);
-
+            tableView.getColumns().addAll(colHeadImg, colId, colNick, colType, colHome);
             loadWord(1, term.getType());
             pagePre.setOnAction(event -> {
                 int curPage = Integer.parseInt(pageCur.getText());
@@ -101,6 +147,12 @@ public class FansController extends BaseController implements Initializable {
         } else {
             pageNext.setDisable(false);
         }
+    }
+
+    @FXML
+    public void tableViewOnClick() {
+        MyFans fans = tableView.getSelectionModel().getSelectedItem();
+        System.out.println(fans);
     }
 
     public void reloadWord() {

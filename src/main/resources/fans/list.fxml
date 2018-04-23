@@ -22,7 +22,7 @@
     </FlowPane>
   </top>
   <center>
-    <TableView fx:id="tableView">
+    <TableView fx:id="tableView" onMouseClicked="#tableViewOnClick">
       <columns>
       </columns>
     </TableView>
