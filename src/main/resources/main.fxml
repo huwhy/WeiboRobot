@@ -56,7 +56,7 @@
         </Tab>
         <Tab fx:id="tabWords" onSelectionChanged="#tabSelected" text="自定义敏感词"/>
         <Tab fx:id="tabTask" text="任务中心" onSelectionChanged="#tabSelected"/>
-        <Tab fx:id="tabAutoTask" text="自动侦察兵" onSelectionChanged="#tabSelected"/>
+        <Tab fx:id="tabAutoTask" text="战狼侦察兵" onSelectionChanged="#tabSelected"/>
         <Tab fx:id="tabFans" text="粉丝管理" onSelectionChanged="#tabSelected"/>
         <Tab fx:id="tabData" text="数据统计" onSelectionChanged="#tabSelected"/>
       </tabs>

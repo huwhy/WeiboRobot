@@ -25,7 +25,7 @@
       <padding>
         <Insets bottom="5" left="5" right="5" top="5"/>
       </padding>
-      <Text fx:id="txTitle" text="侦察兵设置" textAlignment="CENTER" wrappingWidth="224.0" GridPane.columnIndex="0"
+      <Text fx:id="txTitle" text="战狼侦察兵设置" textAlignment="CENTER" wrappingWidth="224.0" GridPane.columnIndex="0"
             GridPane.columnSpan="3" GridPane.rowIndex="0">
         <font>
           <Font size="24.0"/>

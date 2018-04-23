@@ -22,7 +22,7 @@
       <Button text="编辑敏感词" onAction="#showEditWord"/>
       <Button text="删除敏感词" onAction="#delWord"/>
       <Button text="刷新" onAction="#reloadWord"/>
-      <Label text="敏感词类型:">
+      <Label text="敏感词粉丝类型:">
       </Label>
       <ChoiceBox fx:id="chbType" prefHeight="23.0" prefWidth="167.0" onAction="#chbTypeChange"/>
     </FlowPane>
