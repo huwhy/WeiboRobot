@@ -2,8 +2,8 @@ package cn.huwhy.weibo.robot.controller;
 
 import cn.huwhy.common.util.RandomUtil;
 import cn.huwhy.common.util.StringUtil;
-import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.AppContext;
+import cn.huwhy.weibo.robot.model.Member;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,7 +28,7 @@ public class MainController extends BaseController implements Initializable {
     @FXML
     private TabPane tabPane;
     @FXML
-    private Tab tabWb, tabWords, tabTask, tabAutoTask, tabFans, tabData;
+    private Tab tabWb, tabWords, tabTask, tabAutoTask, tabFans, tabData, tabMy;
 
     public void refreshCode() {
         code = RandomUtil.getRandomNum(4);
@@ -39,7 +39,7 @@ public class MainController extends BaseController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         code = RandomUtil.getRandomNum(4);
         refreshCode();
-        tabPane.getTabs().removeAll(tabWords, tabTask, tabAutoTask, tabFans, tabData);
+        tabPane.getTabs().removeAll(tabWords, tabTask, tabAutoTask, tabFans, tabData, tabMy);
     }
 
     public void init() {
@@ -57,11 +57,11 @@ public class MainController extends BaseController implements Initializable {
     public void btnLoginClick() {
         if (txCode.getText().equals(this.code)) {
             tabPane.getTabs().remove(tabWb);
-            tabPane.getTabs().addAll(tabWords, tabTask, tabAutoTask, tabFans, tabData);
+            tabPane.getTabs().addAll(tabWords, tabTask, tabAutoTask, tabFans, tabData, tabMy);
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING, "");
             alert.setTitle("提示");
-            alert.setHeaderText("用户密码错误");
+            alert.setHeaderText("验证码错误");
             alert.showAndWait();
         }
     }
@@ -85,6 +85,9 @@ public class MainController extends BaseController implements Initializable {
             AppContext.setAutoTask(true);
             Parent parent = AppContext.loadFxml("data/index.fxml");
             tabData.setContent(parent);
+        } else if (e.getTarget() == tabMy) {
+            Parent parent = AppContext.loadFxml("my/setting.fxml");
+            tabMy.setContent(parent);
         }
     }
 

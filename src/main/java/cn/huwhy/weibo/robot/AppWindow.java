@@ -17,7 +17,7 @@ public class AppWindow extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("战狼微博舆情监测系统V1.0!");
+        primaryStage.setTitle("战狼微博娱情监测系统V1.0!");
         AppContext.setMainState(primaryStage);
         AppContext.showLogin();
         InputStream iconStream = AppWindow.class.getClassLoader().getResourceAsStream("logo.jpeg");
@@ -26,7 +26,7 @@ public class AppWindow extends Application {
 //        BufferedImage image = ImageIO.read(AppWindow.class.getClassLoader().getResourceAsStream("logo.jpeg"));
 //        TrayIcon icon = new TrayIcon(image, "战狼微博舆情监测系统V1.0!");
 //        tray.add(icon);
-        primaryStage.setIconified(true);
+//        primaryStage.setIconified(true);
         primaryStage.show();
 
     }

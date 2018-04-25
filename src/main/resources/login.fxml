@@ -21,7 +21,7 @@
     <Insets bottom="10" left="25" right="25" top="25" />
   </padding>
   
-  <Text fx:id="welcome" text="战狼微博舆情监测" textAlignment="RIGHT" GridPane.columnIndex="0" GridPane.columnSpan="4" GridPane.rowIndex="0" />
+  <Text fx:id="welcome" text="战狼微博娱情监测" textAlignment="RIGHT" GridPane.columnIndex="0" GridPane.columnSpan="4" GridPane.rowIndex="0" />
   
   <Label text="    " GridPane.columnIndex="0" GridPane.rowIndex="2" />
   <Label text="用户名:" GridPane.columnIndex="1" GridPane.rowIndex="2" />

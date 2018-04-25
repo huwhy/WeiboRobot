@@ -1,5 +1,6 @@
 package cn.huwhy.weibo.robot.controller;
 
+import cn.huwhy.common.util.Base64;
 import cn.huwhy.weibo.robot.model.Member;
 import cn.huwhy.weibo.robot.service.MemberService;
 import cn.huwhy.weibo.robot.util.SpringContentUtil;
@@ -10,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import org.junit.Test;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,11 +30,13 @@ public class LoginController extends BaseController implements Initializable{
     @FXML
     public void handleSubmitButtonAction(ActionEvent e) {
         actionTarget.setText("Sign in button pressed");
-        if (txUsername.getText().equals("") || txPassword.getText().equals("")) {
+        String text = txPassword.getText();
+        if (txUsername.getText().equals("") || text.equals("")) {
             actionTarget.setText("用户密码错误");
         } else {
             Member member = memberService.getByName(txUsername.getText());
-            if (member != null && member.getPassword().equals(txPassword.getText())) {
+            String pwd = new String(Base64.encode(text.getBytes()));
+            if (member != null && member.getPassword().equals(pwd)) {
                 member.setConfig(memberService.getConfig(member.getId()));
                 AppContext.showMain(member);
             } else {
