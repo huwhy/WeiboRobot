@@ -8,6 +8,9 @@ public class Member implements Serializable {
     private String password;
     private String wbName;
     private String wbPassword;
+    private int commentNum;
+    private int redCommentNum;
+    private int blackCommentNum;
     private long lastCommentId;
 
     public Member() {
@@ -56,6 +59,30 @@ public class Member implements Serializable {
 
     public void setWbPassword(String wbPassword) {
         this.wbPassword = wbPassword;
+    }
+
+    public int getCommentNum() {
+        return commentNum;
+    }
+
+    public void setCommentNum(int commentNum) {
+        this.commentNum = commentNum;
+    }
+
+    public int getRedCommentNum() {
+        return redCommentNum;
+    }
+
+    public void setRedCommentNum(int redCommentNum) {
+        this.redCommentNum = redCommentNum;
+    }
+
+    public int getBlackCommentNum() {
+        return blackCommentNum;
+    }
+
+    public void setBlackCommentNum(int blackCommentNum) {
+        this.blackCommentNum = blackCommentNum;
     }
 
     public long getLastCommentId() {

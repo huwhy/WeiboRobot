@@ -3,16 +3,19 @@
 <mapper namespace="cn.huwhy.weibo.robot.dao.MemberDao">
 
   <sql id="COLUMNS">
-    id,`name`,`password`,`wb_name`,`wb_password`,`last_comment_id`
+    id,`name`,`password`,`wb_name`,`wb_password`,`comment_num`,
+    `red_comment_num`,`black_comment_num`,`last_comment_id`
   </sql>
 
   <insert id="save" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     insert into member(
     <include refid="COLUMNS"/>
     ) VALUES (
-    #{id},#{name},#{password},#{wbName},#{wbPassword},#{lastCommentId}
+    #{id},#{name},#{password},#{wbName},#{wbPassword},#{commentNum},
+    #{redCommentNum},#{blackCommentNum},#{lastCommentId}
     ) on duplicate key update password=VALUES(password),wb_name=VALUES(wb_name),
-    wb_password=VALUES(wb_password),last_comment_id=VALUES(last_comment_id)
+    wb_password=VALUES(wb_password),comment_num=VALUES(comment_num),red_comment_num=VALUES(red_comment_num),
+    black_comment_num=VALUES(black_comment_num),last_comment_id=VALUES(last_comment_id)
   </insert>
   
   <select id="get" resultType="Member" parameterType="Integer">

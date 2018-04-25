@@ -23,6 +23,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -80,7 +81,7 @@ public class FansController extends BaseController implements Initializable {
                 cell.setOnMouseClicked((MouseEvent t) -> {
                     if (t.getClickCount() == 2) {
                         try {
-                            URI uri = new URI(((LabeledText) t.getTarget()).getText());
+                            URI uri = new URI(((TextFieldTableCell) t.getTarget()).getText());
                             Desktop.getDesktop().browse(uri);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -96,12 +97,13 @@ public class FansController extends BaseController implements Initializable {
                     public void updateItem(String item, boolean empty) {
                         super.updateItem("", empty);
                         if (StringUtil.isNotEmpty(item)) {
-                            BackgroundImage backgroundImage = new BackgroundImage(new Image(item),
-                                    BackgroundRepeat.NO_REPEAT,
-                                    BackgroundRepeat.NO_REPEAT,
-                                    BackgroundPosition.CENTER,
-                                    BackgroundSize.DEFAULT);
-                            this.setBackground(new Background(backgroundImage));
+                            this.setStyle("-fx-background-image: url('" + item + "')");
+//                            BackgroundImage backgroundImage = new BackgroundImage(new Image(item),
+//                                    BackgroundRepeat.NO_REPEAT,
+//                                    BackgroundRepeat.NO_REPEAT,
+//                                    BackgroundPosition.CENTER,
+//                                    BackgroundSize.DEFAULT);
+//                            this.setBackground(new Background(backgroundImage));
                         }
                     }
                 };

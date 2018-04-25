@@ -143,6 +143,7 @@ public class CommentAction {
                         break;
                     }
                 }
+                member.setCommentNum(member.getCommentNum() + 1);
                 WebElement imgEl = element.findElement(By.cssSelector(".face a img"));
                 String img = imgEl.getAttribute("src");
                 String usercard = imgEl.getAttribute("usercard").replace("id=", "");
@@ -159,6 +160,7 @@ public class CommentAction {
                 fans.setHeadImg(img);
                 fans.setMemberId(this.member.getId());
                 if (fans.getType().equals(WordType.BLACK)) {
+                    member.setBlackCommentNum(member.getBlackCommentNum() + 1);
                     deleteComment(element, this.member.getConfig().isOpenBlack());
                 } else {
                     for (Word word : words) {
@@ -170,9 +172,11 @@ public class CommentAction {
                                 fans.setBadNum(fans.getBadNum() + 1);
                                 deleteComment(element, member.getConfig().isOpenBlack() && member.getConfig().getBadNumLimit() <= fans.getBadNum());
                                 delNum += 1;
+                                member.setBlackCommentNum(member.getBlackCommentNum() + 1);
                                 break;
                             } else if (word.getType() == WordType.IRON) {
                                 fans.setGoodNum(fans.getGoodNum() + 1);
+                                member.setRedCommentNum(member.getRedCommentNum() + 1);
                                 break;
                             }
                         }
